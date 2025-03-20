@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .image-section {
+            flex: 1;
+            background-image: url('https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?q=80&w=1470&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        .shop-info {
+            position: absolute;
+            bottom: 40px;
+            left: 40px;
+            color: white;
+            z-index: 2;
+        }
+
+        .shop-info h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .shop-info p {
+            font-size: 18px;
+            max-width: 400px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .form-section {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 80px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 30px;
+            border-radius: 10px;
+            position: relative;
+            font-size: large;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 25px;
+            margin-top: -15px;
+        }
+
+        .form-header h2 {
+            font-size: 35px;
+            color: #2e7d32;
+            margin-bottom: 10px;
+            font-weight: bold;
+            background: none;
+            box-shadow: none;
+            padding: 0;
+            display: inline-block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #444;
+        }
+
+        .form-control {
+            width: 100%;
+            height: 45px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            padding: 0 45px 0 15px; /* Increased right padding to make room for the cat */
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #2e7d32;
+            box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.2);
+        }
+
+        .btn-primary {
+            background-color: #2e7d32;
+            border: none;
+            color: white;
+            font-size: 18px;
+            font-weight: 500;
+            padding: 12px;
+            width: 100%;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn-primary:hover {
+            background-color: #1b5e20;
+        }
+
+        .form-footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .form-footer a {
+            color: #2e7d32;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Animation styles */
+        .forms-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        .login-form, .register-form, .forgot-password-form, .verification-form, .reset-password-form {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            transition: transform 0.6s ease-in-out, opacity 0.6s ease-in-out;
+        }
+
+        .login-form {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .register-form, .forgot-password-form, .verification-form, .reset-password-form {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+
+        .login-form.slide-out {
+            transform: translateX(-100%);
+            opacity: 0;
+        }
+
+        .register-form.slide-in, .forgot-password-form.slide-in, .verification-form.slide-in, .reset-password-form.slide-in {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        /* Logo */
+        .logo {
+            position: absolute;
+            top: 30px;
+            left: 40px;
+            z-index: 2;
+        }
+
+        .logo h2 {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .logo span {
+            color: #4caf50;
+        }
+
+        /* Password toggle icon styles */
+        .password-container {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 15px; /* Adjusted position */
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 10; /* Ensure it's above the input */
+        }
+
+        .password-toggle:hover {
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .password-toggle:active {
+            transform: translateY(-50%) scale(0.9);
+        }
+
+        /* Cat animation */
+        .cat-face {
+            width: 30px;
+            height: 30px;
+            position: relative;
+            background-color: #f0c987;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .cat-ear {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 12px solid #f0c987;
+            top: -5px;
+            z-index: -1;
+        }
+
+        .cat-ear.left {
+            left: 0;
+            transform: rotate(-30deg);
+        }
+
+        .cat-ear.right {
+            right: 0;
+            transform: rotate(30deg);
+        }
+
+        .cat-eye {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background-color: #333;
+            border-radius: 50%;
+            top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .cat-eye.left {
+            left: 7px;
+        }
+
+        .cat-eye.right {
+            right: 7px;
+        }
+
+        .cat-nose {
+            position: absolute;
+            width: 6px;
+            height: 4px;
+            background-color: #ff9d9d;
+            border-radius: 50%;
+            top: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .cat-mouth {
+            position: absolute;
+            width: 8px;
+            height: 4px;
+            border-bottom: 2px solid #333;
+            border-radius: 50%;
+            top: 22px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .cat-eyelid {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f0c987;
+            top: 9px;
+            border-radius: 50%;
+            transform: scaleY(0);
+            transform-origin: center top;
+            transition: transform 0.2s ease;
+        }
+
+        .cat-eyelid.left {
+            left: 6px;
+        }
+        .cat-eyelid.right {
+            right: 6px;
+        }
+
+        .password-toggle.active .cat-eyelid {
+            transform: scaleY(1);
+        }
+
+        .password-toggle.animate .cat-eyelid {
+            animation: blink 0.4s;
+        }
+
+        @keyframes blink {
+            0% { transform: scaleY(0); }
+            50% { transform: scaleY(1); }
+            100% { transform: scaleY(0); }
+        }
+
+        .password-toggle.active .cat-eye {
+            height: 1px;
+            border-radius: 0;
+            top: 14px;
+        }
+
+        .password-toggle.active .cat-face {
+            background-color: #e6b978;
+        }
+
+        .password-toggle.active .cat-ear {
+            border-bottom-color: #e6b978;
+        }
+
+        .cat-whisker {
+            position: absolute;
+            width: 10px;
+            height: 1px;
+            background-color: #555;
+            top: 20px;
+        }
+
+        .cat-whisker.left-top {
+            left: 0;
+            transform: rotate(-10deg);
+        }
+
+        .cat-whisker.left-bottom {
+            left: 0;
+            top: 23px;
+            transform: rotate(-20deg);
+        }
+
+        .cat-whisker.right-top {
+            right: 0;
+            transform: rotate(10deg);
+        }
+
+        .cat-whisker.right-bottom {
+            right: 0;
+            top: 23px;
+            transform: rotate(20deg);
+        }
+
+        /* Verification code input styles */
+        .verification-code-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .verification-code-input {
+            width: 50px;
+            height: 60px;
+            font-size: 24px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin: 0 5px;
+        }
+
+        .verification-code-input:focus {
+            outline: none;
+            border-color: #2e7d32;
+            box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.2);
+        }
+
+        .resend-code {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .timer {
+            color: #2e7d32;
+            font-weight: 500;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 992px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .image-section {
+                flex: 0 0 200px;
+            }
+
+            .shop-info {
+                bottom: 20px;
+                left: 20px;
+            }
+
+            .shop-info h1 {
+                font-size: 28px;
+            }
+
+            .shop-info p {
+                font-size: 16px;
+            }
+
+            .form-section {
+                padding-top: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="image-section">
+        <div class="image-overlay"></div>
+        <div class="logo">
+            <h2 style="font-size: 3rem">Shop<span>Now</span></h2>
+        </div>
+        <div class="shop-info">
+            <h1>Welcome to ShowNow</h1>
+            <p>Your one-stop destination for eco-friendly products. Join us today and start shopping sustainably.</p>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div class="form-container">
+            <div class="forms-wrapper" >
+                <!-- Login Form -->
+                <div class="login-form" id="loginForm">
+                    <div class="form-header" >
+                        <h2>Login to Your Account</h2>
+                        <p>Enter your credentials to access your account</p>
+                    </div>
+
+                    <form id="loginFormElement" onsubmit="loginSubmit(event)">
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input type="text" style="border-radius: 15px;" class="form-control" id="username" placeholder="Enter your username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <div class="password-container">
+                                <input type="password" style="border-radius: 15px;" class="form-control" id="password" placeholder="Enter your password" required>
+                                <div class="password-toggle" onclick="togglePassword('password', this)">
+                                    <div class="cat-face">
+                                        <div class="cat-ear left"></div>
+                                        <div class="cat-ear right"></div>
+                                        <div class="cat-eye left"></div>
+                                        <div class="cat-eye right"></div>
+                                        <div class="cat-eyelid left"></div>
+                                        <div class="cat-eyelid right"></div>
+                                        <div class="cat-nose"></div>
+                                        <div class="cat-mouth"></div>
+                                        <div class="cat-whisker left-top"></div>
+                                        <div class="cat-whisker left-bottom"></div>
+                                        <div class="cat-whisker right-top"></div>
+                                        <div class="cat-whisker right-bottom"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-primary">Login</button>
+
+                        <div class="form-footer">
+                            <p><a id="forgotPasswordBtn">Forgot Password?</a></p>
+                            <hr>
+                            <p>Don't have an account? <a id="showRegisterForm">Register Now</a></p>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Register Form -->
+                <div class="register-form" id="registerForm">
+                    <div class="form-header">
+                        <h2>Create an Account</h2>
+                        <p>Join GreenShop and start shopping sustainably</p>
+                    </div>
+
+                    <form id="registerFormElement" onsubmit="registerUser(event)">
+                        <div class="form-group">
+                            <label for="reg_username">Username</label>
+                            <input type="text" class="form-control" style="border-radius: 15px;" id="reg_username" placeholder="Choose a username" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="reg_email">Email</label>
+                            <input type="email" class="form-control" style="border-radius: 15px;" id="reg_email" placeholder="Enter your email" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="reg_phone">Phone</label>
+                            <input type="tel" class="form-control" style="border-radius: 15px;" id="reg_phone" placeholder="Enter your phone number" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="reg_password">Password</label>
+                            <div class="password-container">
+                                <input type="password" class="form-control" id="reg_password" style="border-radius: 15px;" placeholder="Create a password" required>
+                                <div class="password-toggle" onclick="togglePassword('reg_password', this)">
+                                    <div class="cat-face">
+                                        <div class="cat-ear left"></div>
+                                        <div class="cat-ear right"></div>
+                                        <div class="cat-eye left"></div>
+                                        <div class="cat-eye right"></div>
+                                        <div class="cat-eyelid left"></div>
+                                        <div class="cat-eyelid right"></div>
+                                        <div class="cat-nose"></div>
+                                        <div class="cat-mouth"></div>
+                                        <div class="cat-whisker left-top"></div>
+                                        <div class="cat-whisker left-bottom"></div>
+                                        <div class="cat-whisker right-top"></div>
+                                        <div class="cat-whisker right-bottom"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-primary">Register</button>
+
+                        <div class="form-footer">
+                            <p>Already have an account? <a id="showLoginForm">Login</a></p>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Verification Code Form -->
+                <div class="verification-form" id="verificationForm">
+                    <div class="form-header">
+                        <h2>Verify Your Email</h2>
+                        <p>Enter the 4-digit code sent to your email</p>
+                    </div>
+
+                    <form id="verificationFormElement" onsubmit="verifyCode(event)">
+                        <div class="verification-code-container">
+                            <input type="text" class="verification-code-input" maxlength="1" id="code1" required>
+                            <input type="text" class="verification-code-input" maxlength="1" id="code2" required>
+                            <input type="text" class="verification-code-input" maxlength="1" id="code3" required>
+                            <input type="text" class="verification-code-input" maxlength="1" id="code4" required>
+                        </div>
+
+                        <div class="resend-code">
+                            <span>Didn't receive the code?</span>
+                            <a id="resendCodeBtn" onclick="resendCode()">Resend</a>
+                            <span class="timer" id="codeTimer"></span>
+                        </div>
+
+                        <button type="submit" class="btn-primary">Verify</button>
+
+                        <div class="form-footer">
+                            <p><a id="backToRegisterForm">Back to Registration</a></p>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Forgot Password Form -->
+                <div class="forgot-password-form" id="forgotPasswordFormDiv">
+                    <div class="form-header">
+                        <h2>Forgot Password</h2>
+                        <p>Enter your email to reset your password</p>
+                    </div>
+
+                    <form id="forgotPasswordFormElement" onsubmit="sendResetCode(event)">
+                        <div class="form-group">
+                            <label for="forgot_email">Email</label>
+                            <input type="email" class="form-control" style="border-radius: 15px;" id="forgot_email" placeholder="Enter your email" required>
+                        </div>
+
+                        <button type="submit" class="btn-primary">Send Reset Code</button>
+
+                        <div class="form-footer">
+                            <p>Remember your password? <a id="backToLoginForm">Back to Login</a></p>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Reset Password Form -->
+                <div class="reset-password-form" id="resetPasswordForm">
+                    <div class="form-header">
+                        <h2>Reset Password</h2>
+                        <p>Enter the verification code and your new password</p>
+                    </div>
+
+                    <form id="resetPasswordFormElement" onsubmit="resetPassword(event)">
+                        <div class="form-group">
+                            <label for="reset_code">Verification Code</label>
+                            <input type="text" class="form-control" style="border-radius: 15px;" id="reset_code" placeholder="Enter verification code" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="new_password">New Password</label>
+                            <div class="password-container">
+                                <input type="password" class="form-control" id="new_password" style="border-radius: 15px;" placeholder="Create a new password" required>
+                                <div class="password-toggle" onclick="togglePassword('new_password', this)">
+                                    <div class="cat-face">
+                                        <div class="cat-ear left"></div>
+                                        <div class="cat-ear right"></div>
+                                        <div class="cat-eye left"></div>
+                                        <div class="cat-eye right"></div>
+                                        <div class="cat-eyelid left"></div>
+                                        <div class="cat-eyelid right"></div>
+                                        <div class="cat-nose"></div>
+                                        <div class="cat-mouth"></div>
+                                        <div class="cat-whisker left-top"></div>
+                                        <div class="cat-whisker left-bottom"></div>
+                                        <div class="cat-whisker right-top"></div>
+                                        <div class="cat-whisker right-bottom"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="confirm_password">Confirm Password</label>
+                            <div class="password-container">
+                                <input type="password" class="form-control" id="confirm_password" style="border-radius: 15px;" placeholder="Confirm your new password" required>
+                                <div class="password-toggle" onclick="togglePassword('confirm_password', this)">
+                                    <div class="cat-face">
+                                        <div class="cat-ear left"></div>
+                                        <div class="cat-ear right"></div>
+                                        <div class="cat-eye left"></div>
+                                        <div class="cat-eye right"></div>
+                                        <div class="cat-eyelid left"></div>
+                                        <div class="cat-eyelid right"></div>
+                                        <div class="cat-nose"></div>
+                                        <div class="cat-mouth"></div>
+                                        <div class="cat-whisker left-top"></div>
+                                        <div class="cat-whisker left-bottom"></div>
+                                        <div class="cat-whisker right-top"></div>
+                                        <div class="cat-whisker right-bottom"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-primary">Reset Password</button>
+
+                        <div class="form-footer">
+                            <p><a id="backToLoginFromReset">Back to Login</a></p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="js/request.js"></script>
+<script>
+    // DOM Elements
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    const forgotForm = document.getElementById('forgotPasswordFormDiv');
+    const verificationForm = document.getElementById('verificationForm');
+    const resetPasswordForm = document.getElementById('resetPasswordForm');
+
+    const showRegisterFormBtn = document.getElementById('showRegisterForm');
+    const showLoginFormBtn = document.getElementById('showLoginForm');
+    const forgotPasswordBtn = document.getElementById('forgotPasswordBtn');
+    const backToLoginFormBtn = document.getElementById('backToLoginForm');
+    const backToRegisterFormBtn = document.getElementById('backToRegisterForm');
+    const backToLoginFromResetBtn = document.getElementById('backToLoginFromReset');
+
+    // Store user data during registration process
+    let registrationData = {};
+    let countdown = 60;
+    let countdownInterval;
+    let verificationEmail = '';
+
+    // Event Listeners
+    showRegisterFormBtn.addEventListener('click', showRegisterForm);
+    showLoginFormBtn.addEventListener('click', showLoginForm);
+    forgotPasswordBtn.addEventListener('click', showForgotPasswordForm);
+    backToLoginFormBtn.addEventListener('click', showLoginForm);
+    backToRegisterFormBtn.addEventListener('click', showRegisterForm);
+    backToLoginFromResetBtn.addEventListener('click', showLoginForm);
+
+    // Setup verification code input auto-focus
+    setupVerificationInputs();
+
+    // Functions
+    function showRegisterForm() {
+        hideAllForms();
+        loginForm.classList.add('slide-out');
+        registerForm.classList.add('slide-in');
+    }
+
+    function showLoginForm() {
+        hideAllForms();
+        loginForm.classList.remove('slide-out');
+    }
+
+    function showForgotPasswordForm() {
+        hideAllForms();
+        loginForm.classList.add('slide-out');
+        forgotForm.classList.add('slide-in');
+    }
+
+    function showVerificationForm() {
+        hideAllForms();
+        loginForm.classList.add('slide-out');
+        verificationForm.classList.add('slide-in');
+        startCountdown();
+    }
+
+    function showResetPasswordForm() {
+        hideAllForms();
+        loginForm.classList.add('slide-out');
+        resetPasswordForm.classList.add('slide-in');
+    }
+
+    function hideAllForms() {
+        registerForm.classList.remove('slide-in');
+        forgotForm.classList.remove('slide-in');
+        verificationForm.classList.remove('slide-in');
+        resetPasswordForm.classList.remove('slide-in');
+    }
+
+    function setupVerificationInputs() {
+        const inputs = document.querySelectorAll('.verification-code-input');
+
+        inputs.forEach((input, index) => {
+            // Auto-focus next input
+            input.addEventListener('input', function() {
+                if (this.value.length === this.maxLength) {
+                    if (index < inputs.length - 1) {
+                        inputs[index + 1].focus();
+                    }
+                }
+            });
+
+            // Handle backspace
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Backspace' && this.value.length === 0) {
+                    if (index > 0) {
+                        inputs[index - 1].focus();
+                    }
+                }
+            });
+        });
+    }
+
+    function startCountdown() {
+        const timerElement = document.getElementById('codeTimer');
+        const resendBtn = document.getElementById('resendCodeBtn');
+
+        countdown = 60;
+        resendBtn.style.pointerEvents = 'none';
+        resendBtn.style.opacity = '0.5';
+
+        updateTimerDisplay();
+
+        clearInterval(countdownInterval);
+        countdownInterval = setInterval(() => {
+            countdown--;
+            updateTimerDisplay();
+
+            if (countdown <= 0) {
+                clearInterval(countdownInterval);
+                resendBtn.style.pointerEvents = 'auto';
+                resendBtn.style.opacity = '1';
+                timerElement.textContent = '';
+            }
+        }, 1000);
+    }
+
+    function updateTimerDisplay() {
+        const timerElement = document.getElementById('codeTimer');
+        timerElement.textContent = `(${countdown}s)`;
+    }
+
+    function getVerificationCode() {
+        const code1 = document.getElementById('code1').value;
+        const code2 = document.getElementById('code2').value;
+        const code3 = document.getElementById('code3').value;
+        const code4 = document.getElementById('code4').value;
+        return code1 + code2 + code3 + code4;
+    }
+
+    function togglePassword(inputId, toggleElement) {
+        const passwordInput = document.getElementById(inputId);
+
+        toggleElement.classList.add('animate');
+
+        setTimeout(() => {
+            toggleElement.classList.toggle('active');
+            passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
+
+            setTimeout(() => {
+                toggleElement.classList.remove('animate');
+            }, 500);
+        }, 150);
+    }
+
+    function resendCode() {
+        if (countdown > 0) return;
+
+        if (verificationEmail) {
+            sendVerificationCode(verificationEmail);
+            startCountdown();
+        }
+    }
+
+    function sendVerificationCode(email) {
+        request({
+            url: "/user/send-code",
+            method: "POST",
+            params: { email }
+        })
+            .then(() => {
+                console.log("Verification code sent successfully");
+            })
+            .catch(error => {
+                console.error("Error sending verification code:", error);
+                alert(error.response?.data || "Failed to send verification code. Please try again.");
+            });
+    }
+
+    function registerUser(event) {
+        event.preventDefault();
+
+        const username = document.getElementById("reg_username").value;
+        const email = document.getElementById("reg_email").value;
+        const phone = document.getElementById("reg_phone").value;
+        const password = document.getElementById("reg_password").value;
+
+        // Send data as query parameters
+        request({
+            url: `/user/check-existence?username=${username}&email=${email}&phone=${phone}`,
+            method: "POST"
+        })
+            .then(response => {
+                if (response.data === "User details are unique.") {
+                    // Store data for later use after verification
+                    registrationData = {
+                        username,
+                        email,
+                        phone,
+                        password
+                    };
+
+                    verificationEmail = email;
+
+                    // Send verification code
+                    sendVerificationCode(email);
+
+                    // Show verification form
+                    showVerificationForm();
+                } else {
+                    alert(response.data); // Display error message (e.g., "This username is already taken.")
+                }
+            })
+            .catch(error => {
+                console.error("Error checking existence:", error);
+                alert("An error occurred while checking user details. Please try again.");
+            });
+    }
+
+    function verifyCode(event) {
+        event.preventDefault();
+
+        const code = getVerificationCode();
+
+        request({
+            url: "/user/register",
+            method: "POST",
+            data: registrationData,
+            params: { code }
+        })
+            .then(() => {
+                alert("Registration successful! Please login.");
+                showLoginForm();
+                document.getElementById("username").value = registrationData.username;
+
+                // Clear registration data
+                registrationData = {};
+                clearVerificationInputs();
+            })
+            .catch(error => {
+                console.error("Error registering:", error);
+                alert(error.response?.data || "Registration failed! Please try again.");
+            });
+    }
+
+    function clearVerificationInputs() {
+        document.getElementById('code1').value = '';
+        document.getElementById('code2').value = '';
+        document.getElementById('code3').value = '';
+        document.getElementById('code4').value = '';
+    }
+
+    function sendResetCode(event) {
+        event.preventDefault();
+
+        const email = document.getElementById("forgot_email").value;
+        verificationEmail = email;
+
+        request({
+            url: "/user/send-reset-code",
+            method: "POST",
+            params: { email }
+        })
+            .then(() => {
+                alert("Password reset code has been sent to your email!");
+                showResetPasswordForm();
+            })
+            .catch(error => {
+                console.error("Error sending reset code:", error);
+                alert(error.response?.data || "Failed to send reset code! Please try again.");
+            });
+    }
+
+    function resetPassword(event) {
+        event.preventDefault();
+
+        const code = document.getElementById("reset_code").value;
+        const newPassword = document.getElementById("new_password").value;
+        const confirmPassword = document.getElementById("confirm_password").value;
+
+        if (newPassword !== confirmPassword) {
+            alert("Passwords do not match!");
+            return;
+        }
+
+        request({
+            url: "/user/reset-password",
+            method: "POST",
+            data: {
+                email: verificationEmail,
+                code: code,
+                newPassword: newPassword
+            }
+        })
+            .then(() => {
+                alert("Password has been reset successfully!");
+                showLoginForm();
+            })
+            .catch(error => {
+                console.error("Error resetting password:", error);
+                alert(error.response?.data || "Failed to reset password! Please try again.");
+            });
+    }
+
+    function loginSubmit(event) {
+        event.preventDefault();
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+
+        request({
+            url: "/user/login",
+            method: "POST",
+            data: { username, password }
+        })
+            .then(response => {
+                console.log("Server Response:", response);
+                const token = response.data.token || response.data;
+                if (!token) {
+                    throw new Error("Token not received from server");
+                }
+
+                localStorage.setItem("token", token);
+
+                const decodedToken = jwt_decode(token);
+                const roles = decodedToken.roles || [];
+
+                if (roles.includes("ROLE_ADMIN")) {
+                    window.location.href = "adminpage.html";
+                } else {
+                    window.location.href = "store.html";
+                }
+
+                alert("Login successful! Redirecting...");
+            })
+            .catch(error => {
+                console.error("Error logging in:", error);
+                alert(error.response?.data || "Login failed! Please check your username and password.");
+            });
+    }
+</script>
+
+</body>
+</html>

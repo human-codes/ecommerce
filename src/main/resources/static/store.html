@@ -1,0 +1,1918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>ShopNow</title>
+    <style>
+
+        .navbar {
+            background-color: #fff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-card {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #fff;
+            padding: 15px;
+            transition: transform 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-top: 10px;
+        }
+
+        .product-card:hover {
+            transform: scale(1.05);
+        }
+
+        .category-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #28a745;
+            color: white;
+            padding: 5px 10px;
+            font-size: 14px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .like-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: transparent;
+            border: none;
+            /*color: red;*/
+            font-size: 20px;
+            display: none;
+        }
+
+        .product-card:hover .like-btn {
+            display: block;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .product-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: green;
+            margin-top: 10px;
+        }
+
+        .product-price {
+            font-size: 16px;
+            font-weight: bold;
+            color: #141826;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .product-price i {
+            color: gold;
+        }
+
+        .add-to-cart {
+            margin-top: auto;
+            padding: 10px;
+            font-weight: bold;
+            border-radius: 8px;
+            transition: 0.3s;
+            border: none;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 10px; /* Tugmalar orasidagi masofa */
+            align-items: center;
+        }
+
+
+        .add-to-cart:hover {
+            opacity: 0.8;
+        }
+
+        .badge {
+            background: limegreen;
+            color: white;
+            font-size: 14px;
+            padding: 5px 10px;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            border-radius: 30%;
+        }
+
+        .category-btn {
+            border-radius: 20px;
+            padding: 10px 20px;
+            background: rgba(218, 216, 210, 0.53); /* Default blue */
+            color: black;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .category-btn:hover {
+            background: rgba(255, 255, 255, 0.04); /* Darker blue on hover */
+        }
+
+        .category-btn.active {
+            background: #28a745 !important; /* Green when selected */
+            color: white;
+        }
+
+        .cart-icons {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .cart-icons a {
+            position: relative;
+            text-decoration: none;
+            color: black;
+            font-size: 25px;
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -5px;
+            right: -10px;
+            background: green;
+            color: white;
+            font-size: 12px;
+            border-radius: 50%;
+            padding: 4px 6px;
+        }
+
+        .search-box {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .search-box input {
+            width: 100%;
+            max-width: 400px;
+            padding: 12px 15px;
+            border: 2px solid #4caf50;
+            border-radius: 25px;
+            outline: none;
+            font-size: 16px;
+            transition: 0.3s;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-box input:focus {
+            border-color: #43a047;
+            box-shadow: 0 3px 10px rgba(76, 175, 80, 0.3);
+        }
+
+        #categoryList {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .category-item {
+            padding: 10px 15px;
+            background-color: #4caf50;
+            color: white;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .category-item:hover {
+            background-color: #43a047;
+            box-shadow: 0 3px 8px rgba(76, 175, 80, 0.4);
+        }
+
+        .navbar .navbar-brand.active {
+            font-weight: bolder;
+            text-decoration: underline;
+            color: #28a745 !important; /* Yashil rang */
+        }
+
+        .cart-icons a {
+            font-size: 14px; /* Kichikroq shrift */
+            color: #6c757d; /* Bootstrap-ning default kulrangi */
+            text-decoration: none; /* Underline olib tashlash */
+            display: flex;
+            align-items: center;
+            gap: 5px; /* Icon va matn orasidagi masofa */
+            padding: 5px 8px; /* Ichki oraliq */
+        }
+
+        .profile {
+            font-size: 19px; /* Kichikroq shrift */
+            color: #6c757d; /* Bootstrap-ning default kulrangi */
+            text-decoration: none; /* Underline olib tashlash */
+            display: flex;
+            align-items: center;
+            gap: 5px; /* Icon va matn orasidagi masofa */
+            padding: 5px 8px; /* Ichki oraliq */
+            transition: color 0.3s, background 0.3s; /* Yoqimli animatsiya */
+        }
+
+        .profile:hover,
+        .profile.active {
+            color: #fff !important; /* Oq rangga o‘tadi */
+            background-color: #6c757d !important; /* Yashil fon */
+
+        }
+
+        .cart-icons a:hover {
+            color: #198754; /* Yashil rangga o‘tadi */
+        }
+
+        .cart-icons i {
+            font-size: 16px; /* Iconlar biroz kichik */
+        }
+
+        .cart-badge {
+            font-size: 12px; /* Savat belgisi soni kichikroq bo‘lsin */
+            background: red;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 5px;
+            margin-left: 3px;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            padding-top: 70px;
+        }
+
+        .footer {
+            background-color: #12151c;
+            color: white;
+            padding: 40px 20px;
+            margin-top: auto;
+        }
+
+        .containerjon {
+            display: flex;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .footer-section {
+            width: 30%;
+        }
+
+        .underline {
+            width: 50px;
+            height: 3px;
+            background-color: #4caf50;
+            margin-bottom: 10px;
+        }
+
+        .social-icons a {
+            color: #aaa;
+            font-size: 20px;
+            margin-right: 10px;
+            transition: 0.3s;
+        }
+
+        .social-icons a:hover {
+            color: white;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        ul li a {
+            color: #aaa;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 8px;
+            transition: 0.3s;
+        }
+
+        ul li a:hover {
+            color: white;
+        }
+
+        .email-input {
+            width: 100%;
+            padding: 12px;
+            background-color: #2a2e38;
+            border: 1px solid #4caf50;
+            border-radius: 10px;
+            color: white;
+            margin-bottom: 12px;
+            font-size: 16px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .email-input:focus {
+            border-color: #43a047;
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
+        }
+
+        .subscribe-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #4caf50;
+            color: white;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+            border: none;
+            font-weight: bold;
+        }
+
+        .subscribe-btn:hover {
+            background-color: #43a047;
+            box-shadow: 0 4px 10px rgba(76, 175, 80, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .social-icons a {
+            font-size: 28px; /* Ikonkalarni kattalashtirish */
+            color: #aaa;
+            transition: 0.3s;
+            margin: 27px;
+        }
+
+        .social-icons a:hover {
+            color: white; /* Hover effekti */
+        }
+
+        .containeri {
+            display: flex;
+            flex-direction: column; /* Ichidagi elementlar ustma-ust joylashsin */
+            align-items: flex-start; /* Chapga tekislanish */
+            width: 100%;
+            max-width: 4000px;
+            margin: 50px auto;
+            padding: 10px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: bold;
+            text-align: left;
+            margin-bottom: 10px;
+            flex-grow: 1; /* Kengayishi */
+        }
+
+        .section-title::after {
+            content: "";
+            display: block;
+            width: 60px;
+            height: 4px;
+            background-color: #4caf50;
+            margin-top: 5px;
+        }
+
+        .search-container {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            flex-grow: 1; /* Kengayishi */
+        }
+
+        .search-box {
+            width: 100%;
+            max-width: 2000px;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 15px;
+            outline: none;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        .search-box:focus {
+            border-color: #4caf50;
+            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+        }
+
+        .category-list {
+            display: flex;
+            justify-content: left;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .category-btn {
+            padding: 10px 20px;
+            background-color: #e9ecef;
+            color: #333;
+            border-radius: 25px;
+            border: none;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .category-btn.active {
+            border-color: #43a047;
+            color: white;
+        }
+
+        .category-btn:focus {
+            border-color: #43a047;
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
+        }
+
+        .category-btn:hover {
+            border-color: #43a047;
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
+        }
+
+        #notification-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .notification {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 16px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+            opacity: 0;
+            transform: translateX(100%);
+            animation: slideIn 0.5s forwards, fadeOut 0.5s 2.5s forwards;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Like ikonkasi */
+        .notification .icon {
+            font-size: 22px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px;
+            border-radius: 50%;
+        }
+
+        /* Close tugmasi */
+        .notification .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            position: absolute;
+            right: 10px;
+            top: 10px;
+        }
+
+        /* Animatsiyalar */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+
+        /* Saralanganlar paneli */
+        .favorites-panel {
+            position: fixed;
+            top: 0;
+            right: -50%;
+            width: 50%;
+            height: 100%;
+            background: white;
+            box-shadow: -4px 0 10px rgba(0, 0, 0, 0.2);
+            overflow-y: auto;
+            transition: 0.5s;
+            z-index: 1001;
+            padding: 20px;
+        }
+
+        /* Panel ochilganda chiqishi */
+        .favorites-panel.active {
+            right: 0;
+        }
+
+        /* Panel sarlavhasi */
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        /* Saralangan mahsulotlar ro‘yxati */
+        .favorites-list {
+            margin-top: 15px;
+        }
+
+        .favorite-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+        }
+
+        .favorite-item img {
+            width: 50px;
+            height: 50px;
+            border-radius: 5px;
+        }
+
+        .remove-btn {
+            background: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        /* Qolgan sahifani xira qilish */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.5s;
+            z-index: 1000;
+        }
+
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .ad-slider {
+            width: 90%;
+            height: 400px;
+            margin: auto;
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .ad-slide {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+        }
+
+        .ad-slide.active {
+            opacity: 1;
+        }
+
+        .ad-content {
+            flex: 1;
+            padding: 20px;
+            max-width: 50%;
+        }
+
+        .ad-content h2 {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .ad-content p {
+            font-size: 18px;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        .ad-btn {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        .ad-btn:hover {
+            background-color: #218838;
+        }
+
+        .ad-slide img {
+            flex: 1;
+            max-width: 40%;
+            height: auto;
+            object-fit: contain;
+        }
+
+        /*modal*/
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            opacity: 0;
+            animation: fadeIn 0.3s ease-in-out forwards;
+        }
+
+        .modal.closing {
+            animation: fadeOut 0.3s ease-in-out forwards;
+        }
+
+        /* Modal Content */
+        .modal-content {
+            display: flex;
+            flex-direction: column;
+            background: white;
+            width: 100%;
+            max-width: 900px;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            transform: scale(0.95);
+            opacity: 0;
+            animation: scaleUp 0.4s ease-out 0.1s forwards;
+        }
+
+        .modal.closing .modal-content {
+            animation: scaleDown 0.3s ease-in forwards;
+        }
+
+        @media (min-width: 768px) {
+            .modal-content {
+                flex-direction: row;
+                max-height: 90vh;
+            }
+        }
+
+        /* Left side (Image) */
+        .modal-image-container {
+            flex: 1;
+            background: linear-gradient(135deg, #f9f9f9, #f0f0f0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .modal-image-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transition: transform 0.5s ease;
+            transform-origin: center;
+        }
+
+        .modal-image-container:hover img {
+            transform: scale(1.05);
+        }
+
+        /* Right side (Info) */
+        .modal-info {
+            flex: 1;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .modal-info .shop-logo {
+            height: 32px;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-info h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .modal-info .price-tag {
+            display: flex;
+            align-items: baseline;
+            margin-bottom: 0.75rem;
+        }
+
+        .modal-info .price-tag .label {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-right: 0.5rem;
+        }
+
+        .modal-info .price-tag .value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #4F46E5;
+        }
+
+        .modal-info .category-tag {
+            display: flex;
+            align-items: baseline;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-info .category-tag .label {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-right: 0.5rem;
+        }
+
+        .modal-info .category-tag .value {
+            color: #4b5563;
+        }
+
+        .modal-info p.description {
+            color: #4b5563;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: auto;
+        }
+
+        .action-buttons button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .action-buttons .add-to-cart {
+            background-color: #4F46E5;
+            color: white;
+            border: none;
+            flex: 1;
+        }
+
+        .action-buttons .add-to-cart:hover {
+            background-color: #4338ca;
+        }
+
+        .action-buttons .save {
+            background-color: transparent;
+            border: 1px solid #d1d5db;
+            color: #374151;
+        }
+
+        .action-buttons .save:hover {
+            background-color: #f9fafb;
+        }
+
+        /* Close Button */
+        .close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background-color: #f3f4f6;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            z-index: 10;
+        }
+
+        .close:hover {
+            background-color: #e5e7eb;
+        }
+
+        .close svg {
+            width: 1.25rem;
+            height: 1.25rem;
+            color: #6b7280;
+        }
+
+        /* Animation for content elements */
+        .animate-item {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .animate-item.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+
+        @keyframes scaleUp {
+            from {
+                transform: scale(0.95);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes scaleDown {
+            from {
+                transform: scale(1);
+                opacity: 1;
+            }
+            to {
+                transform: scale(0.95);
+                opacity: 0;
+            }
+        }
+
+        .text-danger {
+            color: red !important;
+        }
+
+        .star-icon {
+            font-size: 22px;
+            color: #ccc; /* Default kulrang */
+            cursor: pointer;
+            transition: color 0.2s ease-in-out;
+        }
+
+        .star-icon.active {
+            color: gold; /* Faollashganda sariq */
+        }
+
+        .see-more-btn {
+            background-color: white;
+            color: green;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .see-more-btn:hover {
+            background-color: white;
+        }
+
+        .d-none {
+            display: none;
+        }
+
+        #loading {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: white;
+            top: 0;
+            left: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        /* Spinner */
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+</head>
+
+<body>
+
+<!-- Loading ekrani -->
+<div id="loading">
+    <div class="spinner"></div>
+</div>
+<header class="navbar navbar-expand-lg p-3" style=" position: fixed; top: 0;  left: 0;  width: 100%;  background-color: white;
+                color: white;  padding: 5px 8px;  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);  z-index: 1000;">
+
+    <div class="d-flex align-items-center me-2">
+        <img src="images/logo/img.png" alt="not found !" style="width: 110px; margin-left: 10px; margin-right: 95px;">
+        <a class="navbar-brand" href="store.html"
+           style="text-decoration: none; cursor: default; font-size: 24px;"></a>
+    </div>
+
+    <div class="d-flex align-items-center me-auto me-4"> <!-- ms-4 bilan chapga yaqinlashtiramiz -->
+        <a class="navbar-brand " style="color: #6c757d; font-weight: bolder; font-size: 17px"
+           href="store.html">ASOSIY</a>
+        <a class="navbar-brand " style="color: #6c757d; font-weight: bolder; font-size: 17px" href="contact.html">KONTAKT</a>
+        <a class="navbar-brand " style="color: #6c757d; font-weight: bolder; font-size: 17px" href="about.html">BIZ
+            HAQIMIZDA</a>
+        <a class="navbar-brand admin-page" href="adminpage.html"
+           style="display: none; font-weight: bolder; color: #6c757d; font-size: 17px;">Admin page</a>
+    </div>
+    <div class="d-flex align-items-center">
+        <div class="cart-icons d-flex align-items-center">
+            <a href="#" onclick="toggleFavoritesPanel(); return false;"><i
+                    class="bi bi-heart"></i><span>Saralanganlar</span></a>
+            <a href="basket.html"><i class="bi bi-cart"></i><span>Savat</span><span class="cart-badge"
+                                                                                    id="cartSize">3</span></a>
+            <a href="orders.html"><i class="bi bi-box-seam"></i><span>Buyurtmalar</span></a>
+        </div>
+
+
+        <!-- User Profile Dropdown -->
+        <div class="dropdown ms-3" id="userProfile" style="display: none;">
+            <button class="btn btn-outline-success dropdown-toggle d-flex align-items-center" type="button"
+                    id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-person-circle me-2"></i>
+                <span id="usernameDisplay"></span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                <li><a class="profile" href="profile.html"><i class="bi bi-person"></i> Profile</a></li>
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
+                <li><a class="profile text-danger" href="#" id="logoutBtn"><i class="bi bi-box-arrow-right"></i>
+                    Logout</a></li>
+            </ul>
+        </div>
+
+        <button id="authButton" class="btn btn-outline-success ms-3"></button>
+    </div>
+</header>
+
+<!--notifaction-->
+<div id="notification-container"></div>
+
+<!--reklama-->
+<br>
+<br>
+<div class="ad-slider">
+    <div class="ad-slides">
+        <div class="ad-slide active">
+            <div class="ad-content">
+                <h2>48V zarbaviy buragich</h2>
+                <p>Akkumulyatorli drel, 24 ta buyumdan iborat to‘plam.</p>
+                <button class="ad-btn">Batafsil</button>
+            </div>
+            <img src="images/reklama/img.png" alt="Reklama 1">
+        </div>
+
+        <div class="ad-slide">
+            <div class="ad-content">
+                <h2>Kuchli elektr perforator</h2>
+                <p>Beton, yog‘och va metall uchun qulay vosita.</p>
+                <button class="ad-btn">Ko‘rish</button>
+            </div>
+            <img src="images/reklama/img_2.png" alt="Reklama 2">
+        </div>
+
+        <div class="ad-slide">
+            <div class="ad-content">
+                <h2>Universal asboblar to‘plami</h2>
+                <p>Turli xil uy sharoitida ta'mirlash uchun zarur bo‘lgan vositalar.</p>
+                <button class="ad-btn">Harid qilish</button>
+            </div>
+            <img src="images/reklama/img_3.png" alt="Reklama 3">
+        </div>
+    </div>
+</div>
+<!-- Saralanganlar paneli -->
+<div id="favorites-panel" class="favorites-panel">
+    <div class="panel-header">
+        <h4>Saralangan mahsulotlar</h4>
+        <button onclick="toggleFavoritesPanel()" class="close-btn">&times;</button>
+    </div>
+    <div id="favorites-list" class="favorites-list">
+        <!-- Tanlangan mahsulotlar shu joyda chiqadi -->
+    </div>
+</div>
+
+<!-- Panel fonini yarim xira qilish uchun -->
+<div id="overlay" class="overlay" onclick="toggleFavoritesPanel()"></div>
+
+
+<div class="container mt-4">
+    <div class="containeri">
+        <h2 class="section-title">Our Products</h2>
+        <div class="search-container">
+            <input class="search-box" id="searchInput" placeholder="Search products..." type="text">
+        </div>
+        <div class="category-list" id="categoryList"></div>
+    </div>
+    <div class="row mt-4" id="products"></div>
+</div>
+
+<footer class="footer">
+    <div class="containerjon">
+        <div class="footer-section">
+            <h2>Bizning kompaniya</h2>
+            <div class="underline"></div>
+            <p>Ajoyib mahsulotlar va xizmatlar uchun yagona manzil. Biz bilan bog‘laning va so‘nggi takliflarimiz hamda
+                maxsus chegirmalarimizdan xabardor bo‘ling.</p>
+            <div class="social-icons">
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-linkedin"></i></a>
+            </div>
+        </div>
+
+        <div class="footer-section">
+            <h2>Tezkor havolalar</h2>
+            <div class="underline"></div>
+            <ul>
+                <li><a href="store.html">Asosiy</a></li>
+                <li><a href="#">Kategoriyalar</a></li>
+                <li><a href="contact.html">Kontakt</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-section">
+            <h2>Aloqada bo'ling</h2>
+            <div class="underline"></div>
+            <input type="email" placeholder="Telefon raqam kiriting..." class="email-input">
+            <button class="subscribe-btn">Obuna bo'lish</button>
+        </div>
+    </div>
+</footer>
+
+<!--    modal -->
+<div id="productModal" class="modal">
+    <div class="modal-content">
+        <!-- Left side - Image -->
+        <div class="modal-image-container">
+            <img id="modalProductImage" src="/placeholder.svg" alt="Product Image">
+        </div>
+
+        <!-- Right side - Info -->
+        <div class="modal-info">
+            <button class="close" onclick="closeProductModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+
+            <!-- Shop Logo -->
+            <img src="images/logo/img.png" style="height: 60px; width: 240px; margin-left: 80px" alt="Shop Market"
+                 class="shop-logo animate-item">
+
+            <!-- Product Name -->
+            <h2 id="modalProductName" class="animate-item"></h2>
+
+            <!-- Price -->
+            <div class="price-tag animate-item">
+                <span class="label">Narxi:</span>
+                <span id="modalProductPrice" class="value"></span>
+                <span class="value" style="margin-left: 10px">so'm</span>
+            </div>
+
+            <!-- Category -->
+            <div class="category-tag animate-item">
+                <span class="label">Kategoriya:</span>
+                <span id="modalProductCategory" class="value"></span>
+            </div>
+
+            <!-- Description -->
+            <p id="modalProductDescription" class="description animate-item"></p>
+            <span>Bizning sifatli mahsulotlarimizni tanlab, eng yaxshi xarid qiling!</span>
+            <br>
+            <br>
+            <span><i class="bi bi-stars"></i> Nega aynan biz?</span>
+            <br>
+            <span><i class="bi bi-check2-circle"></i> Yuqori sifat</span>
+            <span><i class="bi bi-check2-circle"></i> Qulay narxlar</span>
+            <span><i class="bi bi-check2-circle"></i> Tez yetkazib berish</span>
+            <span><i class="bi bi-check2-circle"></i> Kafolatlangan mahsulotlar</span>
+            <br>
+            <br>
+            <br>
+            <br>
+            <span><i class="bi bi-award"></i>Hozir buyurtma bering va sifatni his qiling!</span>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="js/request.js"></script>
+<script src="js/modal.js"></script>
+
+<script>
+    let categoryList = document.getElementById("categoryList");
+    let productList = document.getElementById("products");
+    let cartSize = document.getElementById("cartSize");
+    const currentPage = window.location.pathname.split("/").pop();
+    let basketItems = loadBasket();
+    let allProducts = []; // Store all products for search functionality
+    let currentCategoryId = 0; // Track current category
+
+
+    // Search functionality
+    const searchInput = document.querySelector('#searchInput');
+    searchInput.addEventListener('input', function() {
+        let query = this.value.trim().toLowerCase();
+        filterProducts(query);
+    });
+    function filterProducts(query) {
+        if (currentCategoryId === 0) {
+            // If on "All" category, search through all products
+            if (query === '') {
+                getCategoryProducts(0); // Reset to show all products
+            } else {
+                request({
+                    url: `/product/0`,
+                    method: 'get'
+                })
+                    .then(res => {
+                        let filteredProducts = res.data.filter(product =>
+                            product.name.toLowerCase().includes(query) ||
+                            product.category.name.toLowerCase().includes(query)
+                        );
+                        displayProducts(filteredProducts);
+                    })
+                    .catch(error => {
+                        console.error("Error fetching products:", error);
+                    });
+            }
+        } else {
+            // If on a specific category, search only within that category
+            request({
+                url: `/product/${currentCategoryId}`,
+                method: 'get'
+            })
+                .then(res => {
+                    if (query === '') {
+                        displayProducts(res.data);
+                    } else {
+                        let filteredProducts = res.data.filter(product =>
+                            product.name.toLowerCase().includes(query) ||
+                            product.category.name.toLowerCase().includes(query)
+                        );
+                        displayProducts(filteredProducts);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching category products:", error);
+                });
+        }
+    }
+    function displayProducts(products) {
+        let s = '';
+        basketItems = loadBasket(); // Savatni qayta yuklash
+
+        if (products.length === 0) {
+            productList.innerHTML = '<div class="text-center p-5">No products found matching your search.</div>';
+            return;
+        }
+
+        for (let product of products) {
+            let inBasket = basketItems.has(product.id.toString());
+            let buttonColor = inBasket ? "red" : "#121827";
+
+            // Store product data in a data attribute instead of inline onclick
+            s += `<div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+    <div class="product-card d-flex flex-column" data-product='${JSON.stringify(product).replace(/'/g, "&apos;")}'
+        onmouseover="showLike(this)" onmouseout="hideLike(this)" onclick="openProductModal(${product.id})"
+        style="position: relative; padding-bottom: 50px;">
+
+        <span class="badge">${product.price} so'm</span>
+
+        <!-- Like tugmasi -->
+        <button class="like-btn" onclick="toggleLike(${product.id}); event.stopPropagation();">
+            <i class="bi bi-heart-fill"></i>
+        </button>
+
+        <img class="product-image" src="http://localhost:8080/api/file/${product.attachment.id}" alt="Product Image">
+        <p class="text-muted mt-2">${product.category.name}</p>
+        <p class="fw-bold">${product.name}</p>
+
+        <!-- Pastdagi container (yulduzchalar chapda, savat tugmasi o'ngda) -->
+        <div class="bottom-container" style="display: flex; justify-content: space-between; align-items: center; position: absolute; bottom: 10px; left: 10px; right: 10px;">
+
+            <!-- Baholash uchun 3 ta sariq yulduzcha -->
+            <div class="rating" id="rating-${product.id}" data-product-id="${product.id}">
+    <i class="bi bi-star star-icon" onclick="rateProduct(${product.id}, 1, event)"></i>
+    <i class="bi bi-star star-icon" onclick="rateProduct(${product.id}, 2, event)"></i>
+    <i class="bi bi-star star-icon" onclick="rateProduct(${product.id}, 3, event)"></i>
+</div>
+
+            <!-- Savat tugmasi -->
+            <button onclick="addToBasket(${product.id}, event); event.stopPropagation();" class="add-to-cart"
+                style="background:${buttonColor}; color: white; display: flex; align-items: center; justify-content: center; gap: 5px; width: 50px; height: 50px; border-radius: 10px;">
+                <i class="${inBasket ? 'bi bi-bag-check-fill' : 'bi bi-bag-plus'}" style="pointer-events: none; font-size: 20px;"></i>
+            </button>
+
+        </div>
+    </div>
+</div>`;
+        }
+        productList.innerHTML = s;
+
+        // Add click event listeners after rendering
+        document.querySelectorAll('.product-card').forEach(card => {
+            card.addEventListener('click', function () {
+                try {
+                    const productData = JSON.parse(this.getAttribute('data-product'));
+                    showDemoProduct(productData);
+                } catch (err) {
+                    console.error("Error parsing product data:", err);
+                }
+            });
+        });
+
+        // Restore ratings
+        restoreRatings();
+
+        // Update liked products UI
+        updateLikedProductsUI();
+    }
+    function showLikedProducts() {
+        let productElement = document.getElementById('favorites-list');
+        productElement.innerHTML = ''; // Oldingi ma'lumotlarni tozalash
+
+        let likedProducts = loadLikedProducts(); // LocalStorage'dan olish
+        let basketItems = loadBasket(); // 🛒 Savatni yuklash
+
+        if (likedProducts.length === 0) {
+            productElement.innerHTML = `
+            <div class="empty-likes text-center mt-5">
+                <h4 class="text-danger mt-3">Hech qanday tanlangan mahsulot yo‘q</h4>
+                <p>Mahsulotlarni yoqtiring va ularni shu yerda ko‘ring.</p>
+            </div>
+        `;
+            return;
+        }
+
+        likedProducts.forEach(productId => {
+            request({
+                url: `/product/each/${productId}`,
+                method: 'GET'
+            }).then((res) => {
+                let productData = res.data;
+                displayLikedProduct(productData, basketItems); // UI'ga chiqarish
+            }).catch(error => {
+                console.error("Error fetching liked product:", error);
+            });
+        });
+    }
+
+    // 🟢 Mahsulotni UI'ga chiqarish
+    function displayLikedProduct(product, basketItems) {
+        let productElement = document.getElementById('favorites-list');
+
+        // Agar row mavjud bo'lmasa, uni yaratamiz
+        if (!document.querySelector("#favorites-list .row")) {
+            productElement.innerHTML = '<div class="row"></div>';
+        }
+
+        let rowElement = document.querySelector("#favorites-list .row");
+
+        // 🛒 Savatda borligini tekshirish
+        let inBasket = basketItems.has(product.id);
+        let buttonColor = inBasket ? "red" : "#121827"; // 🟥 Agar bor bo‘lsa, qizil bo‘lmasa ko‘k
+
+        rowElement.innerHTML += `<div class="col-lg-4 col-md-4 col-sm-6 mb-4"> <!-- Enini kattalashtirdik -->
+    <div class="product-card d-flex flex-column"
+        data-product='${JSON.stringify(product).replace(/'/g, "&apos;")}'
+        onmouseover="showLike(this)" onmouseout="hideLike(this)"
+        style="position: relative; padding-bottom: 50px; width: 100%; max-width: 280px;"> <!-- Card enini kengaytirdik -->
+
+        <!-- Narxi -->
+        <span class="badge">${product.price} so'm</span>
+
+        <!-- Like tugmasi -->
+        <button class="like-btn" onclick="deleteLike(${product.id}); event.stopPropagation();">
+            <i class="bi bi-trash3-fill text-danger"></i>
+        </button>
+
+        <!-- Mahsulot rasmi -->
+        <img class="product-image" src="http://localhost:8080/api/file/${product.attachment.id}" alt="Product Image">
+
+        <!-- Kategoriya nomi -->
+        <p class="text-muted mt-2">${product.category.name}</p>
+
+        <!-- Mahsulot nomi -->
+        <p class="fw-bold">${product.name}</p>
+
+        <!-- Pastki qism -->
+        <div class="bottom-container" style="display: flex; justify-content: space-between; align-items: center; position: absolute; bottom: 10px; left: 10px; right: 10px;">
+
+            <!-- Savatga qo‘shish tugmasi -->
+            <button onclick="addToBasket(${product.id}, event); event.stopPropagation();" class="add-to-cart"
+                style="background:${buttonColor}; color: white; display: flex; align-items: center; justify-content: center; gap: 5px; width: 50px; height: 50px; border-radius: 10px;">
+                <i class="${inBasket ? 'bi bi-bag-check-fill' : 'bi bi-bag-plus'}" style="pointer-events: none; font-size: 20px;"></i>
+            </button>
+
+        </div>
+    </div>
+</div>
+
+    `;
+    }
+
+
+    function loadLikedProducts() {
+        let likedProducts = localStorage.getItem("favorites");
+        return likedProducts ? JSON.parse(likedProducts) : [];
+    }
+
+
+    basketSize()
+
+    // Baholarni LocalStorage'dan olish yoki bo'sh obyekt yaratish
+    function getRatings() {
+        return JSON.parse(localStorage.getItem("ratings")) || {};
+    }
+
+    // Mahsulotni baholash
+    function rateProduct(productId, rating, event) {
+        event.stopPropagation(); // Modal ochilishining oldini oladi
+
+        let ratings = getRatings();
+        let ratingContainer = document.getElementById(`rating-${productId}`);
+
+        if (ratings[productId] === rating) {
+            // Agar allaqachon shu baho bosilgan bo‘lsa, o‘chiramiz
+            delete ratings[productId];
+            ratingContainer.setAttribute("data-rated", "false");
+            updateStars(ratingContainer, 0);
+        } else {
+            // Yangi baho qo‘yish
+            ratings[productId] = rating;
+            updateStars(ratingContainer, rating);
+            ratingContainer.setAttribute("data-rated", "true");
+        }
+
+        localStorage.setItem("ratings", JSON.stringify(ratings)); // LocalStorage'ga saqlash
+    }
+
+    // Yulduzchalarni yangilash
+    function updateStars(ratingContainer, rating) {
+        let stars = ratingContainer.querySelectorAll(".star-icon");
+        stars.forEach((star, index) => {
+            if (index < rating) {
+                star.classList.add("active");
+                star.classList.replace("bi-star", "bi-star-fill"); // Sariq qilish
+            } else {
+                star.classList.remove("active");
+                star.classList.replace("bi-star-fill", "bi-star"); // Kulrang qilish
+            }
+        });
+    }
+
+    // Sahifa yuklanganda LocalStorage'dan baholarni olib qayta chizish
+    function restoreRatings() {
+        let ratings = getRatings(); // LocalStorage'dan baholarni olish
+
+        // Mahsulotlar yuklanguncha kutish
+        let interval = setInterval(() => {
+            let allLoaded = true;
+
+            Object.keys(ratings).forEach(productId => {
+                let ratingContainer = document.getElementById(`rating-${productId}`);
+                if (!ratingContainer) {
+                    allLoaded = false; // Hali hammasi yuklanmagan
+                }
+            });
+
+            if (allLoaded) {
+                clearInterval(interval); // Barcha mahsulotlar yuklandi
+
+                Object.keys(ratings).forEach(productId => {
+                    let rating = ratings[productId];
+                    let ratingContainer = document.getElementById(`rating-${productId}`);
+
+                    if (ratingContainer) {
+                        updateStars(ratingContainer, rating); // UI ga tiklash
+                        ratingContainer.setAttribute("data-rated", "true");
+                    }
+                });
+            }
+        }, 100); // Har 100ms da tekshiradi
+    }
+
+    // Sahifa to‘liq yuklanganda ishlaydi
+    document.addEventListener("DOMContentLoaded", () => {
+        restoreRatings();
+    });
+
+    document.querySelectorAll(".navbar .navbar-brand").forEach(link => {
+        // Agar linkning href'ida hozirgi sahifa bo‘lsa, 'active' klassini qo‘shamiz
+        if (link.getAttribute("href") === currentPage) {
+            link.classList.add("active");
+        }
+    });
+
+    function basketSize() {
+        cartSize.innerText = `${loadBasket().size}`
+    }
+
+    function loadBasket() {
+        let storedBasket = localStorage.getItem("basketItems");
+        return storedBasket ? new Map(Object.entries(JSON.parse(storedBasket))) : new Map();
+    }
+
+
+    function addToBasket(productId, event) {
+        let button = event.currentTarget; // Tugmani olish
+        let icon = button.querySelector('i'); // Ichki ikonkani olish
+
+        let basketItems = loadBasket(); // Savatni qayta yuklash
+
+        if (basketItems.has(productId.toString())) {
+            basketItems.delete(productId.toString()); // Agar bor bo‘lsa, olib tashlash
+            button.style.background = "#121827"; // Tugma rangini qayta o‘zgartirish
+            icon.className = "bi bi-bag-plus"; // Ikonkani yangilash
+        } else {
+            basketItems.set(productId.toString(), 1); // Agar yo‘q bo‘lsa, qo‘shish
+            button.style.background = "red"; // Tugma rangini o‘zgartirish
+            icon.className = "bi bi-bag-check-fill"; // Ikonkani o‘zgartirish
+        }
+
+        // 🟢 Yangilangan basketni saqlash
+        localStorage.setItem("basketItems", JSON.stringify(Object.fromEntries(basketItems)));
+
+        // 🟢 Savat o‘zgarishini bildirish (REAL-TIME yangilash)
+        localStorage.setItem("basketUpdated", Date.now());
+
+        basketSize();
+        updateBasketUI();
+    }
+    window.addEventListener("storage", function(event) {
+        if (event.key === "basketUpdated") {
+            console.log("Basket yangilandi!"); // 🟢 Konsolda tekshirish
+            updateBasketUI(); // 🟢 UI'ni real vaqtda yangilash
+        }
+    });
+
+    updateBasketUI();
+
+    function updateBasketUI() {
+        let basket = JSON.parse(localStorage.getItem("basketItems")) || {};
+        let basketCountElements = document.querySelectorAll(".basket-count");
+
+        basketCountElements.forEach((element) => {
+            element.innerText = Object.keys(basket).length;
+        });
+    }
+    function updateLikedProductsUI() {
+        let likedProducts = loadLikedProducts();
+
+        document.querySelectorAll('.product-card').forEach(card => {
+            try {
+                const productData = JSON.parse(card.getAttribute('data-product'));
+                let likeButton = card.querySelector('.like-btn');
+
+                if (likedProducts.includes(productData.id.toString())) {
+                    likeButton.querySelector('i').classList.add("text-danger");
+                    likeButton.style.display = "block";
+                }
+            } catch (err) {
+                console.error("Error parsing product data:", err);
+            }
+        });
+    }
+    function toggleLike(productId) {
+        let likedProducts = JSON.parse(localStorage.getItem("favorites")) || [];
+        let productIdStr = productId.toString();
+        let index = likedProducts.indexOf(productIdStr);
+
+        if (index !== -1) {
+            likedProducts.splice(index, 1);
+            showNotification("Mahsulot saralanganlardan olib tashlandi");
+        } else {
+            likedProducts.push(productIdStr);
+            showNotification("Mahsulot saralanganlarga qo'shildi");
+        }
+
+        localStorage.setItem("favorites", JSON.stringify(likedProducts));
+
+        // Rest of your function...
+    }
+
+    function getCategoryProducts(categoryId) {
+        currentCategoryId = categoryId; // Update current category
+
+        // Clear search input when changing categories
+        document.getElementById('searchInput').value = '';
+
+        request({
+            url: `/product/${categoryId}`,
+            method: 'get'
+        })
+            .then(res => {
+                displayProducts(res.data);
+
+                document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+                document.getElementById(`category-${categoryId}`)?.classList.add('active');
+            })
+            .catch(error => {
+                console.error("Error fetching products:", error);
+            });
+    }
+
+    function showLike(element) {
+        element.querySelector('.like-btn').style.display = 'block';
+    }
+
+    function hideLike(element) {
+        const productData = JSON.parse(element.getAttribute('data-product'));
+        let likedProducts = JSON.parse(localStorage.getItem("favorites")) || [];
+
+        if (!likedProducts.includes(productData.id.toString())) {
+            element.querySelector('.like-btn').style.display = 'none';
+        }
+    }
+
+    // Like tugmasini bosish kelajakda
+    function showNotification(message) {
+        const container = document.getElementById("notification-container");
+
+        // Notification elementini yaratish
+        const notification = document.createElement("div");
+        notification.classList.add("notification");
+
+        // Like ikonkasi
+        const icon = document.createElement("span");
+        icon.classList.add("icon");
+        icon.innerHTML = "❤️"; // Like ikonkasi
+
+        // Xabar
+        const text = document.createElement("span");
+        text.innerText = message;
+
+        // Close tugmasi
+        const closeButton = document.createElement("button");
+        closeButton.classList.add("close-btn");
+        closeButton.innerHTML = "&times;";
+        closeButton.onclick = () => notification.remove();
+
+        // Elementlarni birlashtirish
+        notification.appendChild(icon);
+        notification.appendChild(text);
+        notification.appendChild(closeButton);
+        container.appendChild(notification);
+
+        // 3.5 soniyadan keyin notificationni avtomatik olib tashlash
+        setTimeout(() => {
+            notification.remove();
+        }, 3500);
+    }
+
+    function toggleLike(productId) {
+        let likedProducts = JSON.parse(localStorage.getItem("favorites")) || [];
+        let productIdStr = productId.toString();
+        let index = likedProducts.indexOf(productIdStr);
+
+        if (index !== -1) {
+            likedProducts.splice(index, 1);
+        } else {
+            likedProducts.push(productIdStr);
+        }
+
+        localStorage.setItem("favorites", JSON.stringify(likedProducts));
+
+        document.querySelectorAll('.product-card').forEach(card => {
+            const productData = JSON.parse(card.getAttribute('data-product'));
+            if (productData.id === productId) {
+                let likeButton = card.querySelector('.like-btn');
+                let likeIcon = likeButton.querySelector('i');
+
+                if (index !== -1) {
+                    likeIcon.classList.remove("text-danger");
+                    likeButton.style.display = "none"; // O'chirib qo'yish
+                } else {
+                    likeIcon.classList.add("text-danger");
+                    likeButton.style.display = "block"; // Har doim ko'rinadigan qilish
+                }
+            }
+        });
+    }
+
+    function deleteLike(productId) {
+        let likedProducts = JSON.parse(localStorage.getItem("favorites")) || [];
+        let productIdStr = productId.toString();
+        let index = likedProducts.indexOf(productIdStr);
+
+        if (index !== -1) {
+            likedProducts.splice(index, 1);
+
+            let productCard = document.querySelector(`.product-card[data-product*='"id":${productId}']`);
+            if (productCard) {
+                productCard.parentElement.remove(); // Ota divni o‘chirish
+            }
+        } else {
+            likedProducts.push(productIdStr);
+        }
+
+        localStorage.setItem("favorites", JSON.stringify(likedProducts));
+
+        document.querySelectorAll('.product-card').forEach(card => {
+            const productData = JSON.parse(card.getAttribute('data-product'));
+            if (productData.id === productId) {
+                let likeButton = card.querySelector('.like-btn');
+                let likeIcon = likeButton.querySelector('i');
+
+                if (index !== -1) {
+                    likeIcon.classList.remove("text-danger");
+                    likeButton.style.display = "none"; // O'chirib qo'yish
+                } else {
+                    likeIcon.classList.add("text-danger");
+                    likeButton.style.display = "block"; // Har doim ko'rinadigan qilish
+                }
+            }
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        let likedProducts = JSON.parse(localStorage.getItem("favorites")) || [];
+
+        setTimeout(() => {
+            document.querySelectorAll('.product-card').forEach(card => {
+                try {
+                    const productData = JSON.parse(card.getAttribute('data-product'));
+                    let likeButton = card.querySelector('.like-btn');
+
+                    if (likedProducts.includes(productData.id.toString())) {
+                        likeButton.querySelector('i').classList.add("text-danger");
+                        likeButton.style.display = "block"; // Like bosilgan bo'lsa doim ko'rsatilishi kerak
+                    }
+                } catch (err) {
+                    console.error("Error parsing product data:", err);
+                }
+            });
+        }, 500);
+    });
+
+    function getCategories() {
+        request({
+            url: '/categories',
+            method: 'get'
+        })
+            .then(res => {
+                let categories = res.data;
+                let visibleCategories = categories.slice(0, 4);
+                let hiddenCategories = categories.slice(4);
+
+                let s = `<button id="category-0" onclick="getCategoryProducts(0)" class="category-btn">All</button>`;
+
+                visibleCategories.forEach(item => {
+                    s += `<button id="category-${item.id}" onclick="getCategoryProducts(${item.id})" class="category-btn">${item.name}</button>`;
+                });
+
+                if (hiddenCategories.length > 0) {
+                    s += `<span id="more-categories" class="d-none">`;
+                    hiddenCategories.forEach(item => {
+                        s += `<button id="category-${item.id}" onclick="getCategoryProducts(${item.id})" class="category-btn">${item.name}</button>`;
+                    });
+                    s += `</span>`;
+
+                    s += `
+                <button id="see-more-btn" onclick="toggleCategories()" class="see-more-btn">
+                    <span id="see-more-text">Ko'proq ko'rsatish</span>
+                    <i id="see-more-icon" class="fas fa-chevron-down"></i>
+                </button>
+            `;
+                }
+
+                document.getElementById("categoryList").innerHTML = s;
+            })
+            .catch(error => {
+                console.error("Error fetching categories:", error);
+            });
+    }
+
+    function toggleCategories() {
+        let moreCategories = document.getElementById("more-categories");
+        let seeMoreBtn = document.getElementById("see-more-btn");
+        let seeMoreText = document.getElementById("see-more-text");
+        let seeMoreIcon = document.getElementById("see-more-icon");
+
+        if (moreCategories.classList.contains("d-none")) {
+            moreCategories.classList.remove("d-none");
+            seeMoreText.textContent = "Kamroq ko'rsatish";
+            seeMoreIcon.classList.replace("fa-chevron-down", "fa-chevron-up");
+        } else {
+            moreCategories.classList.add("d-none");
+            seeMoreText.textContent = "Ko'proq ko'rsatish";
+            seeMoreIcon.classList.replace("fa-chevron-up", "fa-chevron-down");
+        }
+    }
+
+    function checkUserAuth() {
+        let token = localStorage.getItem("token");
+        let authButton = document.getElementById("authButton");
+        let userProfile = document.getElementById("userProfile");
+        let usernameDisplay = document.getElementById("usernameDisplay");
+        let logoutBtn = document.getElementById("logoutBtn");
+        let adminPageLink = document.querySelector(".admin-page");
+
+        if (token) {
+            const decodedToken = jwt_decode(token);
+            const username = decodedToken.sub || "User";
+            const roles = decodedToken.roles || [];
+
+            usernameDisplay.innerText = username;
+            userProfile.style.display = "block";
+            authButton.style.display = "none";
+
+            if (roles.includes("ADMIN")) {
+                adminPageLink.style.display = "block";
+            } else {
+                adminPageLink.style.display = "none";
+            }
+
+            logoutBtn.onclick = function () {
+                localStorage.removeItem("token");
+                window.location.reload();
+            };
+        } else {
+            userProfile.style.display = "none";
+            adminPageLink.style.display = "none";
+            authButton.innerText = "Login";
+            authButton.onclick = function () {
+                window.location.href = "login.html";
+            };
+            authButton.style.display = "block";
+        }
+    }
+
+    checkUserAuth();
+    getCategories();
+    getCategoryProducts(0);
+
+    let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+
+    function toggleFavoritesPanel() {
+        document.getElementById("favorites-panel").classList.toggle("active");
+        document.getElementById("overlay").classList.toggle("active");
+        showLikedProducts()
+    }
+
+    function refreshHomePage() {
+        window.location.href = "store.html";
+        window.onload = function () {
+            setTimeout(() => {
+                document.getElementById("loading").style.display = "none";
+                document.getElementById("content").style.display = "block";
+            }, 100); // 1 soniyadan keyin kontent chiqadi
+        };
+
+    }
+
+    function removeFromFavorites(productId) {
+        favorites = favorites.filter(item => item.id !== productId);
+        localStorage.setItem("favorites", JSON.stringify(favorites));
+        showLikedProducts()
+    }
+
+    ///reklama bar
+    let index = 0;
+    const slides = document.querySelectorAll(".ad-slide");
+
+    function changeSlide() {
+        slides.forEach((slide, i) => {
+            slide.classList.remove("active");
+            if (i === index) {
+                slide.classList.add("active");
+            }
+        });
+
+        index = (index + 1) % slides.length; // Keyingi rasmga o‘tish
+    }
+
+    setInterval(changeSlide, 3000); // Har 4 soniyada almashish
+
+    // Sahifa yuklangandan keyin loading ekranini o‘chiramiz
+    window.onload = function () {
+        setTimeout(() => {
+            document.getElementById("loading").style.display = "none";
+            document.getElementById("content").style.display = "block";
+        }, 100); // 1 soniyadan keyin kontent chiqadi
+    };
+
+    // Like bosilganda yangilash funksiyasi
+    function reloadPage() {
+        document.getElementById("loading").style.display = "flex"; // Yana loading chiqadi
+        document.getElementById("content").style.display = "none"; // Kontent yashiriladi
+
+        setTimeout(() => {
+            location.reload(); // 🔄 Sahifani yangilash
+        }, 100); // 0.8 soniya kutib yangilanadi
+    }
+</script>
+</body>
+</html>

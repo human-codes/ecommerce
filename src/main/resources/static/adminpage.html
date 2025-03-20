@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #66bb6a;
+            --secondary-color: #4caf50;
+            --success-color: #81c784;
+            --danger-color: #e57373;
+            --dark-color: #388e3c;
+            --light-color: #e8f5e9;
+            --transition-speed: 0.3s;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        .animated-bg .bubble {
+            position: absolute;
+            border-radius: 50%;
+            background: var(--primary-color);
+            opacity: 0.2;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        .animated-bg .bubble:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            left: 10%;
+            top: 20%;
+            animation-delay: 0s;
+            animation-duration: 20s;
+        }
+
+        .animated-bg .bubble:nth-child(2) {
+            width: 120px;
+            height: 120px;
+            left: 70%;
+            top: 30%;
+            animation-delay: 2s;
+            animation-duration: 25s;
+        }
+
+        .animated-bg .bubble:nth-child(3) {
+            width: 50px;
+            height: 50px;
+            left: 30%;
+            top: 60%;
+            animation-delay: 5s;
+            animation-duration: 18s;
+        }
+
+        .animated-bg .bubble:nth-child(4) {
+            width: 100px;
+            height: 100px;
+            left: 80%;
+            top: 70%;
+            animation-delay: 8s;
+            animation-duration: 22s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) translateX(0);
+            }
+            25% {
+                transform: translateY(-50px) translateX(30px);
+            }
+            50% {
+                transform: translateY(-20px) translateX(-20px);
+            }
+            75% {
+                transform: translateY(50px) translateX(10px);
+            }
+        }
+
+        /* Sidebar styling */
+        .sidebar {
+            background-color: white;
+            min-height: 100vh;
+            padding: 20px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 10;
+            transition: all var(--transition-speed);
+        }
+
+        .sidebar h5 {
+            color: var(--dark-color);
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar h5::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background-color: var(--primary-color);
+            animation: slideRight 2s infinite alternate;
+        }
+
+        @keyframes slideRight {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(100px);
+            }
+        }
+
+        .sidebar .nav-link {
+            font-size: 16px;
+            color: #333;
+            padding: 12px 15px;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            border-radius: 8px;
+            transition: all var(--transition-speed);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(102, 187, 106, 0.1), transparent);
+            transition: all 0.6s;
+            z-index: -1;
+        }
+
+        .sidebar .nav-link:hover::before {
+            left: 100%;
+        }
+
+        .sidebar .nav-link i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+            transition: transform var(--transition-speed);
+        }
+
+        .sidebar .nav-link:hover {
+            background-color: var(--light-color);
+            color: var(--dark-color);
+            transform: translateX(5px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .sidebar .nav-link:hover i {
+            transform: scale(1.2);
+            color: var(--primary-color);
+        }
+
+        .sidebar .nav-link[aria-expanded="true"] {
+            background-color: var(--light-color);
+            color: var(--dark-color);
+        }
+
+        .sidebar .nav-link[aria-expanded="true"] i {
+            transform: rotate(90deg);
+            color: var(--primary-color);
+        }
+
+        /* Smooth dropdown animation */
+        .sidebar .collapse {
+            transition: height 0.35s ease;
+        }
+
+        .sidebar .collapse.show {
+            animation: slideDown 0.35s ease forwards;
+        }
+
+        .sidebar .collapsing {
+            animation: slideUp 0.35s ease forwards;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+        }
+
+        .sidebar .collapse .nav-link {
+            padding-left: 35px;
+            font-size: 14px;
+            margin-bottom: 2px;
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+
+        .sidebar .collapse.show .nav-link {
+            animation: fadeInLeft 0.5s ease forwards;
+        }
+
+        .sidebar .collapse.show .nav-item:nth-child(1) .nav-link {
+            animation-delay: 0.05s;
+        }
+
+        .sidebar .collapse.show .nav-item:nth-child(2) .nav-link {
+            animation-delay: 0.1s;
+        }
+
+        .sidebar .collapse.show .nav-item:nth-child(3) .nav-link {
+            animation-delay: 0.15s;
+        }
+
+        .sidebar .collapse.show .nav-item:nth-child(4) .nav-link {
+            animation-delay: 0.2s;
+        }
+
+        .sidebar .collapse.show .nav-item:nth-child(5) .nav-link {
+            animation-delay: 0.25s;
+        }
+
+        .sidebar .collapse.show .nav-item:nth-child(6) .nav-link {
+            animation-delay: 0.3s;
+        }
+
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .nav-item .badge {
+            margin-left: auto;
+            background-color: var(--danger-color);
+            transition: all var(--transition-speed);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .sidebar .nav-link:hover .badge {
+            transform: scale(1.1);
+        }
+
+        /* Main content styling */
+        main {
+            padding: 20px;
+            transition: all var(--transition-speed);
+        }
+
+        header {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 15px 20px !important;
+            margin-bottom: 25px !important;
+            transition: all var(--transition-speed);
+            animation: headerAppear 1s ease-out forwards;
+        }
+
+        @keyframes headerAppear {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        header:hover {
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.2);
+        }
+
+        header h1 {
+            color: var(--dark-color);
+            font-weight: 600;
+            margin: 0;
+            font-size: 1.8rem;
+        }
+
+        /* Dropdown styling */
+        .dropdown-toggle {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            transition: all var(--transition-speed);
+        }
+
+        .dropdown-toggle:hover, .dropdown-toggle:focus {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        .dropdown-menu {
+            border: none;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 10px;
+            animation: dropdownAppear 0.3s ease-out forwards;
+        }
+
+        @keyframes dropdownAppear {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dropdown-item {
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: all var(--transition-speed);
+        }
+
+        .dropdown-item:hover {
+            background-color: var(--light-color);
+            color: var(--dark-color);
+        }
+
+        .dropdown-item i {
+            margin-right: 8px;
+            color: var(--primary-color);
+        }
+
+        .dropdown-divider {
+            border-top-color: #e9ecef;
+        }
+
+        .dropdown-item.text-danger:hover {
+            background-color: #ffebee;
+        }
+
+        .dropdown-item.text-danger i {
+            color: var(--danger-color);
+        }
+
+        /* Button styling */
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            border-radius: 50px;
+            padding: 8px 20px;
+            transition: all var(--transition-speed);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: all 0.6s;
+            z-index: -1;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-outline-success {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+            border-radius: 50px;
+            padding: 8px 20px;
+            transition: all var(--transition-speed);
+        }
+
+        .btn-outline-success:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+        }
+
+        /* Iframe styling */
+        iframe {
+            width: 100%;
+            height: calc(100vh - 120px);
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all var(--transition-speed);
+            animation: iframeAppear 0.8s ease-out forwards;
+        }
+
+        @keyframes iframeAppear {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        iframe:hover {
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.2);
+        }
+    </style>
+</head>
+<body>
+<!-- Animated Background -->
+<div class="animated-bg">
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-2 d-md-block sidebar">
+            <h5>Admin Panel</h5>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="loadIframe('dashboard.html')"><i class="bi bi-house"></i> Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="collapse" href="#productsMenu" role="button"><i class="bi bi-box"></i> Products</a>
+                    <ul class="collapse nav flex-column ms-3" id="productsMenu">
+                        <li class="nav-item"><a class="nav-link" href="#" onclick="loadIframe('products.html')">Add Product</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" onclick="loadIframe('categories.html')">Categories</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="collapse" href="#ordersMenu" role="button"><i class="bi bi-cart"></i> Orders</a>
+                    <ul class="collapse nav flex-column ms-3" id="ordersMenu">
+                        <li class="nav-item"><a class="nav-link" href="#" onclick="loadIframe('new-orders.html')">New Orders</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" onclick="loadIframe('pending-orders.html')">Pending Orders</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" onclick="loadIframe('complete-orders.html')">Complete Orders</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="loadIframe('customers.html')"><i class="bi bi-people"></i> Customers</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="loadIframe('statistics.html')"><i class="bi bi-bar-chart"></i> Statistics</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="collapse" href="#customerFeedback" role="button"><i class="bi bi-chat"></i> Customer Inquiries & Feedback</a>
+                    <ul class="collapse nav flex-column ms-3" id="customerFeedback">
+                        <li class="nav-item"><a class="nav-link" href="#" onclick="loadIframe('order-issues.html')">Orders Issues</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" onclick="loadIframe('payment-issues.html')">Payment Issues</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" onclick="loadIframe('technical-issues.html')">Technical Issues</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" onclick="loadIframe('product-inquiries.html')">Product Inquiries & Complaints</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" onclick="loadIframe('suggestions.html')">Suggestions & Feedback</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" onclick="loadIframe('delivery-issues.html')">Delivery Issues</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="loadIframe('transactions.html')"><i class="bi bi-wallet"></i> Transactions <span class="badge">8</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="collapse" href="#employeesMenu" role="button"><i class="bi bi-briefcase"></i> Employees</a>
+                    <ul class="collapse nav flex-column ms-3" id="employeesMenu">
+                        <li class="nav-item"><a class="nav-link" href="#" onclick="loadIframe('operators.html')">Operators</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" onclick="loadIframe('delivery-servants.html')">Delivery Servants</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="loadIframe('appearance.html')"><i class="bi bi-palette"></i> Appearance</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="loadIframe('settings.html')"><i class="bi bi-gear"></i> Settings</a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="col-md-10 ms-sm-auto px-md-4">
+            <header class="d-flex justify-content-between align-items-center py-3 px-2 mb-4">
+                <h1>Admin Dashboard</h1>
+                <div class="d-flex align-items-center">
+                    <div class="dropdown ms-3" id="userProfile">
+                        <button class="btn btn-outline-success dropdown-toggle d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle me-2"></i>
+                            <span id="usernameDisplay">Username</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="#" onclick="loadIframe('products.html')"><i class="bi bi-box"></i> Products</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="loadIframe('orders.html')"><i class="bi bi-cart"></i> Orders</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#" id="logoutDropdownBtn"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                        </ul>
+                    </div>
+                    <button class="btn btn-primary ms-3" id="logoutBtn">Logout</button>
+                </div>
+            </header>
+
+            <!-- Iframe for loading content -->
+            <iframe id="main-iframe" src="dashboard.html"></iframe>
+        </main>
+    </div>
+</div>
+
+<script>
+    // Function to load content into the iframe
+    function loadIframe(page) {
+        const iframe = document.getElementById("main-iframe");
+        iframe.style.opacity = "0";
+        iframe.style.transform = "translateY(20px)";
+
+        setTimeout(() => {
+            iframe.src = page;
+
+            // Add animation effect when changing pages
+            setTimeout(() => {
+                iframe.style.opacity = "1";
+                iframe.style.transform = "translateY(0)";
+            }, 100);
+        }, 200);
+
+        // Save the current iframe URL to localStorage
+        localStorage.setItem("iframeUrl", page);
+    }
+
+    // Check user authentication and display username
+    function checkUserAuth() {
+        const token = localStorage.getItem("token");
+        const userProfile = document.getElementById("userProfile");
+        const usernameDisplay = document.getElementById("usernameDisplay");
+        const logoutBtn = document.getElementById("logoutBtn");
+        const logoutDropdownBtn = document.getElementById("logoutDropdownBtn");
+
+        if (token) {
+            // Decode the token to get user details
+            const decodedToken = JSON.parse(atob(token.split('.')[1]));
+            const username = decodedToken.sub || "Admin";
+
+            // Display username and show profile dropdown
+            usernameDisplay.innerText = username;
+            userProfile.style.display = "block";
+
+            // Logout functionality
+            logoutBtn.onclick = function () {
+                localStorage.removeItem("token");
+                localStorage.removeItem("iframeUrl"); // Clear iframe URL on logout
+                window.location.href = "login.html";
+            };
+
+            logoutDropdownBtn.onclick = function () {
+                localStorage.removeItem("token");
+                localStorage.removeItem("iframeUrl"); // Clear iframe URL on logout
+                window.location.href = "log in.html";
+            };
+        } else {
+            // Hide profile dropdown if user is not logged in
+            userProfile.style.display = "none";
+            logoutBtn.onclick = function () {
+                window.location.href = "login.html";
+            };
+        }
+    }
+
+    // Add animation to sidebar menu items on page load
+    function animateSidebar() {
+        const navItems = document.querySelectorAll('.sidebar .nav-item > .nav-link');
+        navItems.forEach((item, index) => {
+            item.style.opacity = "0";
+            item.style.transform = "translateX(-20px)";
+
+            setTimeout(() => {
+                item.style.transition = "all 0.5s ease";
+                item.style.opacity = "1";
+                item.style.transform = "translateX(0)";
+            }, 100 + (index * 50));
+        });
+    }
+
+    // Enhance the collapse animation for dropdown menus
+    function enhanceDropdownAnimation() {
+        // Get all dropdown toggle links
+        const dropdownToggles = document.querySelectorAll('.nav-link[data-bs-toggle="collapse"]');
+
+        // Add click event listeners to each toggle
+        dropdownToggles.forEach(toggle => {
+            toggle.addEventListener('click', function() {
+                // Get the target collapse element
+                const targetId = this.getAttribute('href');
+                const targetCollapse = document.querySelector(targetId);
+
+                // Check if the collapse is currently open or closed
+                const isExpanded = this.getAttribute('aria-expanded') === 'true';
+
+                // If it's being closed, add a slight delay to allow for animation
+                if (isExpanded) {
+                    const navLinks = targetCollapse.querySelectorAll('.nav-link');
+                    navLinks.forEach(link => {
+                        link.style.opacity = "0";
+                        link.style.transform = "translateX(-20px)";
+                    });
+                }
+            });
+        });
+
+        // Listen for Bootstrap collapse events to trigger animations
+        document.addEventListener('shown.bs.collapse', function(event) {
+            const navLinks = event.target.querySelectorAll('.nav-link');
+            navLinks.forEach((link, index) => {
+                setTimeout(() => {
+                    link.style.transition = "all 0.5s ease";
+                    link.style.opacity = "1";
+                    link.style.transform = "translateX(0)";
+                }, 50 * index);
+            });
+        });
+    }
+
+    // On page load, check if there's a saved iframe URL
+    window.onload = function () {
+        checkUserAuth();
+        animateSidebar();
+        enhanceDropdownAnimation();
+
+        const savedIframeUrl = localStorage.getItem("iframeUrl");
+        const iframe = document.getElementById("main-iframe");
+
+        // Load the saved URL if it exists, otherwise load the default page
+        if (savedIframeUrl) {
+            iframe.src = savedIframeUrl;
+        } else {
+            iframe.src = "dashboard.html"; // Default page
+        }
+    };
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

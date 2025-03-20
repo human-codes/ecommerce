@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>ShopNow</title>
+    <style>
+
+
+        .navbar {
+            background-color: #fff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #12151c;
+            color: white;
+            padding: 15px 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+        }
+
+        .product-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease-in-out;
+            min-height: 400px;
+            position: relative;
+        }
+
+        .product-card h5 {
+            font-size: 16px;
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 90%;
+        }
+
+
+        .product-card:hover {
+            transform: scale(1.05);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 230px; /* Uniform image height */
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .add-to-cart {
+            background: #141826;
+            color: white;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease-in-out, color 0.3s ease-in-out;
+        }
+
+        .add-to-cart:hover {
+            background: #28a745;
+            color: white;
+        }
+
+        .badge {
+            background: limegreen;
+            color: white;
+            font-size: 14px;
+            padding: 5px 10px;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            border-radius: 30%;
+        }
+
+        .category-btn {
+            border-radius: 20px;
+            padding: 10px 20px;
+            background: rgba(218, 216, 210, 0.53); /* Default blue */
+            color: black;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .category-btn:hover {
+            background: rgba(255, 255, 255, 0.04); /* Darker blue on hover */
+        }
+
+        .category-btn.active {
+            background: #28a745 !important; /* Green when selected */
+            color: white;
+        }
+
+        .cart-icons {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .cart-icons a {
+            position: relative;
+            text-decoration: none;
+            color: black;
+            font-size: 25px;
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -5px;
+            right: -10px;
+            background: green;
+            color: white;
+            font-size: 12px;
+            border-radius: 50%;
+            padding: 4px 6px;
+        }
+
+        search-box {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .search-box input {
+            width: 100%;
+            max-width: 400px;
+            padding: 12px 15px;
+            border: 2px solid #4caf50;
+            border-radius: 25px;
+            outline: none;
+            font-size: 16px;
+            transition: 0.3s;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-box input:focus {
+            border-color: #43a047;
+            box-shadow: 0 3px 10px rgba(76, 175, 80, 0.3);
+        }
+
+        #categoryList {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .category-item {
+            padding: 10px 15px;
+            background-color: #4caf50;
+            color: white;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .category-item:hover {
+            background-color: #43a047;
+            box-shadow: 0 3px 8px rgba(76, 175, 80, 0.4);
+        }
+
+        .navbar .navbar-brand.active {
+            font-weight: bolder;
+            text-decoration: underline;
+            color: #28a745 !important; /* Yashil rang */
+        }
+
+        .cart-icons a {
+            font-size: 14px; /* Kichikroq shrift */
+            color: #6c757d; /* Bootstrap-ning default kulrangi */
+            text-decoration: none; /* Underline olib tashlash */
+            display: flex;
+            align-items: center;
+            gap: 5px; /* Icon va matn orasidagi masofa */
+            padding: 5px 8px; /* Ichki oraliq */
+        }
+
+        .profile {
+            font-size: 19px; /* Kichikroq shrift */
+            color: #6c757d; /* Bootstrap-ning default kulrangi */
+            text-decoration: none; /* Underline olib tashlash */
+            display: flex;
+            align-items: center;
+            gap: 5px; /* Icon va matn orasidagi masofa */
+            padding: 5px 8px; /* Ichki oraliq */
+        }
+
+        .cart-icons a:hover {
+            color: #198754; /* Yashil rangga o‘tadi */
+        }
+
+        .cart-icons i {
+            font-size: 16px; /* Iconlar biroz kichik */
+        }
+
+        .cart-badge {
+            font-size: 12px; /* Savat belgisi soni kichikroq bo‘lsin */
+            background: red;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 5px;
+            margin-left: 3px;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            padding-top: 70px;
+        }
+
+        .footer {
+            background-color: #12151c;
+            color: white;
+            padding: 40px 20px;
+            margin-top: auto;
+        }
+
+        .containerjon {
+            display: flex;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .footer-section {
+            width: 30%;
+        }
+
+        .underline {
+            width: 50px;
+            height: 3px;
+            background-color: #4caf50;
+            margin-bottom: 10px;
+        }
+
+        .social-icons a {
+            color: #aaa;
+            font-size: 20px;
+            margin-right: 10px;
+            transition: 0.3s;
+        }
+
+        .social-icons a:hover {
+            color: white;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        ul li a {
+            color: #aaa;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 8px;
+            transition: 0.3s;
+        }
+
+        ul li a:hover {
+            color: white;
+        }
+
+        .email-input {
+            width: 100%;
+            padding: 12px;
+            background-color: #2a2e38;
+            border: 1px solid #4caf50;
+            border-radius: 10px;
+            color: white;
+            margin-bottom: 12px;
+            font-size: 16px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .email-input:focus {
+            border-color: #43a047;
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
+        }
+
+        .subscribe-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #4caf50;
+            color: white;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+            border: none;
+            font-weight: bold;
+        }
+
+        .subscribe-btn:hover {
+            background-color: #43a047;
+            box-shadow: 0 4px 10px rgba(76, 175, 80, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .social-icons a {
+            font-size: 28px; /* Ikonkalarni kattalashtirish */
+            color: #aaa;
+            transition: 0.3s;
+            margin: 27px;
+        }
+
+        .social-icons a:hover {
+            color: white; /* Hover effekti */
+        }
+
+
+        .containeri {
+            justify-items: left;
+            max-width: 4000px;
+            margin: 50px auto;
+            padding: 10px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: bold;
+            text-align: left;
+            margin-bottom: 10px;
+        }
+
+        .section-title::after {
+            content: "";
+            display: block;
+            width: 60px;
+            height: 4px;
+            background-color: #4caf50;
+            margin-top: 5px;
+        }
+
+        .search-container {
+            justify-content: center;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .search-box {
+            width: 100%;
+            max-width: 2000px;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 15px;
+            outline: none;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        .search-box:focus {
+            border-color: #4caf50;
+            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+        }
+
+        .category-list {
+            display: flex;
+            justify-content: left;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .category-btn {
+            padding: 10px 20px;
+            background-color: #e9ecef;
+            color: #333;
+            border-radius: 25px;
+            border: none;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .category-btn.active {
+            border-color: #43a047;
+            color: white;
+        }
+
+        .category-btn:focus {
+            border-color: #43a047;
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
+        }
+
+        .category-btn:hover {
+            border-color: #43a047;
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
+        }
+
+    </style>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+</head>
+<body>
+
+<header class="navbar navbar-expand-lg p-3" style="position: fixed; top: 0; left: 0; width: 100%;background-color: white;
+            color: white; padding: 5px 8px;box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);z-index: 1000;">
+
+    <div class="d-flex align-items-center me-2">
+        <img src="images/img_1.png" alt="not found !" style="width: 190px; margin-right: 15px;">
+        <a class="navbar-brand" href="store.html"
+           style="text-decoration: none; cursor: default; font-size: 24px;"></a>
+    </div>
+
+    <div class="d-flex align-items-center me-auto me-4"> <!-- ms-4 bilan chapga yaqinlashtiramiz -->
+        <a class="navbar-brand " style="color: #6c757d; font-weight: bolder; font-size: 20px" href="store.html">Home</a>
+        <a class="navbar-brand " style="color: #6c757d; font-weight: bolder; font-size: 20px" href="contact.html">Contact</a>
+        <a class="navbar-brand " style="color: #6c757d; font-weight: bolder; font-size: 20px" href="products.html">Product</a>
+        <a class="navbar-brand admin-page" href="adminpage.html"
+           style="display: none; font-weight: bolder; color: #6c757d; font-size: 20px;">Admin page</a>
+    </div>
+
+    <div class="d-flex align-items-center">
+        <div class="cart-icons d-flex align-items-center">
+            <a href="#"><i class="bi bi-heart"></i><span>Saralanganlar</span></a>
+            <a href="basket.html"><i class="bi bi-cart"></i><span>Savat</span><span class="cart-badge"
+                                                                                    id="cartSize">3</span></a>
+            <a href="orders.html"><i class="bi bi-box-seam"></i><span>Buyurtmalar</span></a>
+        </div>
+
+        <!-- User Profile Dropdown -->
+        <div class="dropdown ms-3" id="userProfile" style="display: none;">
+            <button class="btn btn-outline-success dropdown-toggle d-flex align-items-center" type="button"
+                    id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-person-circle me-2"></i>
+                <span id="usernameDisplay"></span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                <li><a class="profile" href="profile.html"><i class="bi bi-person"></i> Profile</a></li>
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
+                <li><a class="profile text-danger" href="#" id="logoutBtn"><i class="bi bi-box-arrow-right"></i>
+                    Logout</a></li>
+            </ul>
+        </div>
+
+        <button id="authButton" class="btn btn-outline-success ms-3"></button>
+    </div>
+
+</header>
+<div class="container mt-4">
+    <div class="containeri">
+        <h2 class="section-title">Our Products</h2>
+        <div class="search-container">
+            <input class="search-box" placeholder="Search products..." type="text">
+        </div>
+        <div class="category-list" id="categoryList"></div>
+    </div>
+
+    <div class="row mt-4" id="products"></div>
+</div>
+
+<footer class="footer">
+    <div class="containerjon">
+        <div class="footer-section">
+            <h2>Bizning kompaniya</h2>
+            <div class="underline"></div>
+            <p>Ajoyib mahsulotlar va xizmatlar uchun yagona manzil. Biz bilan bog‘laning va so‘nggi takliflarimiz hamda
+                maxsus chegirmalarimizdan xabardor bo‘ling.</p>
+            <div class="social-icons">
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-linkedin"></i></a>
+            </div>
+        </div>
+
+        <div class="footer-section">
+            <h2>Tezkor havolalar</h2>
+            <div class="underline"></div>
+            <ul>
+                <li><a href="#">Asosiy</a></li>
+                <li><a href="#">Kategoriyalar</a></li>
+                <li><a href="#">Kontakt</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-section">
+            <h2>Aloqada bo'ling</h2>
+            <div class="underline"></div>
+            <input type="email" placeholder="Telefon raqam kiriting..." class="email-input">
+            <button class="subscribe-btn">Obuna bo'lish</button>
+        </div>
+    </div>
+</footer>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="js/request.js"></script>
+<script>
+    let categoryList = document.getElementById("categoryList");
+    let productList = document.getElementById("products");
+    let cartSize = document.getElementById("cartSize");
+    const currentPage = window.location.pathname.split("/").pop();
+    basketSize()
+
+    document.querySelectorAll(".navbar .navbar-brand").forEach(link => {
+        // Agar linkning href'ida hozirgi sahifa bo‘lsa, 'active' klassini qo‘shamiz
+        if (link.getAttribute("href") === currentPage) {
+            link.classList.add("active");
+        }
+    });
+
+    function basketSize() {
+        cartSize.innerText = `${loadBasket().size}`
+    }
+
+    function loadBasket() {
+        let storedBasket = localStorage.getItem("basketItems");
+        return storedBasket ? new Map(Object.entries(JSON.parse(storedBasket))) : new Map();
+    }
+
+    let basketItems = loadBasket();
+
+
+    function addToBasket(productId, event) {
+        let button = event.target;
+
+
+        if (basketItems.has(productId.toString())) {
+            basketItems.delete(productId.toString());
+            button.style.background = "#141826";
+            button.innerText = "Add to Cart";
+        } else {
+            basketItems.set(productId.toString(), 1);
+            button.style.background = "red";
+            button.innerText = "Remove";
+        }
+
+
+        localStorage.setItem("basketItems", JSON.stringify(Object.fromEntries(basketItems)));
+        basketSize()
+        console.log("Updated Basket:", basketItems);
+    }
+
+
+    function getCategoryProducts(categoryId) {
+        request({
+            url: `/product/${categoryId}`,
+            method: 'get'
+
+        })
+            .then(res => {
+                let s = '';
+                basketItems = loadBasket();  // Reload basket state
+
+                for (let product of res.data) {
+                    let inBasket = basketItems.has(product.id.toString());
+                    let buttonColor = inBasket ? "red" : "#141826";
+                    let buttonText = inBasket ? "Remove" : "Add to Cart";
+
+                    s += `
+                    <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                        <div class="product-card d-flex flex-column">
+                            <span class="badge">$${product.price}</span>
+                            <img class="product-image" src="http://localhost:8080/api/file/${product.attachment.id}" alt="Product Image">
+                            <p class="text-muted mt-2">${product.category.name}</p>
+                            <h5 class="fw-bold">${product.name}</h5>
+
+
+                            <button onclick="addToBasket(${product.id}, event)" class="add-to-cart mt-auto" style="background:${buttonColor};">
+                                ${buttonText}
+                            </button>
+                        </div>
+                    </div>`;
+                }
+                productList.innerHTML = s;
+                document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+                document.getElementById(`category-${categoryId}`)?.classList.add('active');
+            })
+            .catch(error => {
+                console.error("Error fetching products:", error);
+            });
+    }
+
+
+    function getCategories() {
+        const token = localStorage.getItem("token");  // Get the token from localStorage
+
+        let config =
+
+
+            request({
+                url: '/categories',
+                method: 'get'
+            })
+                .then(res => {
+                    let s = `<button id="category-0" onclick="getCategoryProducts(0)" class="category-btn">All</button>`;
+                    res.data.forEach(item => {
+                        s += `<button id="category-${item.id}" onclick="getCategoryProducts(${item.id})" class="category-btn">${item.name}</button>`;
+                    });
+                    categoryList.innerHTML = s;
+                })
+                .catch(error => {
+                    console.error("Error fetching categories:", error);
+                });
+    }
+
+
+    function checkUserAuth() {
+        let token = localStorage.getItem("token");
+        let authButton = document.getElementById("authButton");
+        let userProfile = document.getElementById("userProfile");
+        let usernameDisplay = document.getElementById("usernameDisplay");
+        let logoutBtn = document.getElementById("logoutBtn");
+        let adminPageLink = document.querySelector(".admin-page");
+
+        if (token) {
+            const decodedToken = jwt_decode(token);
+            const username = decodedToken.sub || "User";
+            const roles = decodedToken.roles || [];
+
+            usernameDisplay.innerText = username;
+            userProfile.style.display = "block";
+            authButton.style.display = "none";
+
+            if (roles.includes("ADMIN")) {
+                adminPageLink.style.display = "block";
+            } else {
+                adminPageLink.style.display = "none";
+            }
+
+            logoutBtn.onclick = function () {
+                localStorage.removeItem("token");
+                window.location.reload();
+            };
+        } else {
+            userProfile.style.display = "none";
+            adminPageLink.style.display = "none";
+            authButton.innerText = "Login";
+            authButton.onclick = function () {
+                window.location.href = "login.html";
+            };
+            authButton.style.display = "block";
+        }
+    }
+
+    checkUserAuth();
+    getCategories();
+    getCategoryProducts(0);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>CONTACT</title>
+    <style>
+
+        .navbar .navbar-brand.active {
+            font-weight: bolder;
+            text-decoration: underline;
+            color: #28a745 !important; /* Yashil rang */
+        }
+
+        .cart-icons a {
+            font-size: 14px; /* Kichikroq shrift */
+            color: #6c757d; /* Bootstrap-ning default kulrangi */
+            text-decoration: none; /* Underline olib tashlash */
+            display: flex;
+            align-items: center;
+            gap: 5px; /* Icon va matn orasidagi masofa */
+            padding: 5px 8px; /* Ichki oraliq */
+        }
+
+        .profile {
+            font-size: 19px; /* Kichikroq shrift */
+            color: #6c757d; /* Bootstrap-ning default kulrangi */
+            text-decoration: none; /* Underline olib tashlash */
+            display: flex;
+            align-items: center;
+            gap: 5px; /* Icon va matn orasidagi masofa */
+            padding: 5px 8px; /* Ichki oraliq */
+            transition: color 0.3s, background 0.3s; /* Yoqimli animatsiya */
+        }
+
+        .profile:hover,
+        .profile.active {
+            color: #fff !important; /* Oq rangga o‘tadi */
+            background-color: #6c757d !important; /* Yashil fon */
+
+        }
+
+        .cart-icons a:hover {
+            color: #198754; /* Yashil rangga o‘tadi */
+        }
+
+        .cart-icons i {
+            font-size: 16px; /* Iconlar biroz kichik */
+        }
+
+        .cart-badge {
+            font-size: 12px; /* Savat belgisi soni kichikroq bo‘lsin */
+            background: red;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 5px;
+            margin-left: 3px;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            padding-top: 70px;
+        }
+
+        .footer {
+            background-color: #12151c;
+            color: white;
+            padding: 40px 20px;
+            margin-top: auto;
+        }
+
+        .containerjon {
+            display: flex;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .footer-section {
+            width: 30%;
+        }
+
+        .underline {
+            width: 50px;
+            height: 3px;
+            background-color: #4caf50;
+            margin-bottom: 10px;
+        }
+
+        .social-icons a {
+            color: #aaa;
+            font-size: 20px;
+            margin-right: 10px;
+            transition: 0.3s;
+        }
+
+        .social-icons a:hover {
+            color: white;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        ul li a {
+            color: #aaa;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 8px;
+            transition: 0.3s;
+        }
+
+        ul li a:hover {
+            color: white;
+        }
+
+        .email-input {
+            width: 100%;
+            padding: 12px;
+            background-color: #2a2e38;
+            border: 1px solid #4caf50;
+            border-radius: 10px;
+            color: white;
+            margin-bottom: 12px;
+            font-size: 16px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .email-input:focus {
+            border-color: #43a047;
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
+        }
+
+        .subscribe-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #4caf50;
+            color: white;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+            border: none;
+            font-weight: bold;
+        }
+
+        .subscribe-btn:hover {
+            background-color: #43a047;
+            box-shadow: 0 4px 10px rgba(76, 175, 80, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .social-icons a {
+            font-size: 28px; /* Ikonkalarni kattalashtirish */
+            color: #aaa;
+            transition: 0.3s;
+            margin: 27px;
+        }
+
+        .social-icons a:hover {
+            color: white; /* Hover effekti */
+        }
+
+        body {
+            background-color: #f8f9fa;
+        }
+        .contact-container {
+            max-width: 1200px;
+            margin: auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .left-section {
+            background: #0a192f;
+            color: white;
+            padding: 40px;
+            width: 35%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .left-section h4 {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .contact-info {
+            display: flex;
+            align-items: center;
+            gap: 15px; /* Adjusted spacing */
+            margin-bottom: 20px;
+        }
+        .contact-icon {
+            width: 50px;
+            height: 50px;
+            background-color: rgba(30, 203, 99, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .contact-icon i {
+            font-size: 22px;
+            color: #1ecb63;
+        }
+        .contact-text {
+            flex: 1;
+        }
+        .contact-text p {
+            margin: 0;
+            font-size: 16px;
+        }
+        .contact-text span {
+            color: #1ecb63;
+            font-weight: bold;
+        }
+        .right-section {
+            padding: 40px;
+            width: 65%;
+        }
+        .form-control {
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            padding: 14px;
+            font-size: 16px;
+            background: #f8f9fa;
+        }
+        .input-group-text {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-right: 0;
+            font-size: 18px;
+        }
+        .send-btn {
+            background: #0a192f;
+            color: white;
+            border: none;
+            padding: 14px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 8px;
+            transition: background 0.3s ease-in-out;
+        }
+        .send-btn:hover {
+            background: #1ecb63;
+            color: white;
+        }
+        @media (max-width: 768px) {
+            .contact-container {
+                flex-direction: column;
+            }
+            .left-section, .right-section {
+                width: 100%;
+            }
+        }
+
+    </style>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+</head>
+
+<body>
+
+<header class="navbar navbar-expand-lg p-3" style=" position: fixed; top: 0;  left: 0;  width: 100%;  background-color: white;
+                color: white;  padding: 5px 8px;  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);  z-index: 1000;">
+
+    <div class="d-flex align-items-center me-2">
+        <img src="images/logo/img.png" alt="not found !" style="width: 110px; margin-left: 10px; margin-right: 95px;">
+        <a class="navbar-brand" href="store.html"
+           style="text-decoration: none; cursor: default; font-size: 24px;"></a>
+    </div>
+
+    <div class="d-flex align-items-center me-auto me-4"> <!-- ms-4 bilan chapga yaqinlashtiramiz -->
+        <a class="navbar-brand " style="color: #6c757d; font-weight: bolder; font-size: 17px" href="store.html">ASOSIY</a>
+        <a class="navbar-brand active" style="color: #6c757d; font-weight: bolder; font-size: 17px" href="contact.html">KONTAKT</a>
+        <a class="navbar-brand " style="color: #6c757d; font-weight: bolder; font-size: 17px" href="about.html">BIZ HAQIMIZDA</a>
+        <a class="navbar-brand admin-page" href="adminpage.html"
+           style="display: none; font-weight: bolder; color: #6c757d; font-size: 17px;">Admin page</a>
+    </div>
+    <div class="d-flex align-items-center">
+        <div class="cart-icons d-flex align-items-center">
+            <a href="#" onclick="toggleFavoritesPanel(); return false;"><i
+                    class="bi bi-heart"></i><span>Saralanganlar</span></a>
+            <a href="basket.html"><i class="bi bi-cart"></i><span>Savat</span><span class="cart-badge"
+                                                                                    id="cartSize">3</span></a>
+            <a href="orders.html"><i class="bi bi-box-seam"></i><span>Buyurtmalar</span></a>
+        </div>
+
+
+        <!-- User Profile Dropdown -->
+        <div class="dropdown ms-3" id="userProfile" style="display: none;">
+            <button class="btn btn-outline-success dropdown-toggle d-flex align-items-center" type="button"
+                    id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-person-circle me-2"></i>
+                <span id="usernameDisplay"></span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                <li><a class="profile" href="profile.html"><i class="bi bi-person"></i> Profile</a></li>
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
+                <li><a class="profile text-danger" href="#" id="logoutBtn"><i class="bi bi-box-arrow-right"></i>
+                    Logout</a></li>
+            </ul>
+        </div>
+
+        <button id="authButton" class="btn btn-outline-success ms-3"></button>
+    </div>
+</header>
+
+<div class="container my-5">
+    <div class="contact-container">
+        <!-- Left Section -->
+        <div class="left-section">
+            <h4>Biz bilan bog'laning</h4>
+            <div class="contact-info">
+                <div class="contact-icon">
+                    <i class="fas fa-phone"></i>
+                </div>
+                <div class="contact-text">
+                    <p>Bizga qo'ng'iroq qiling !</p>
+                    <p>24/7 aloqamiz</p>
+                    <p>Telefon raqam: <span>+998300000000</span></p>
+                </div>
+            </div>
+            <div class="contact-info">
+                <div class="contact-icon">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <div class="contact-text">
+                    <p>Bizga murojaat qiling !</p>
+                    <p>Ro'yxatni to'ldiring, biz siz bilan 24 soat ichida bog'lanamiz.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Section -->
+        <div class="right-section">
+            <h4 class="fw-bold mb-4">Bizga xabar yuboring !</h4>
+            <form>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                            <input type="text" class="form-control" placeholder="To'liq ism sharifingiz...">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                            <input type="email" class="form-control" placeholder="Elektron pochta manzilingiz">
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                        <input type="text" class="form-control" id="phoneNumber" value="+998" maxlength="13">
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-comment"></i></span>
+                        <textarea class="form-control" rows="4" placeholder="Xabaringizni qoldiring..."></textarea>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <button type="submit" class="btn send-btn w-100">Xabarni yuborish</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<footer class="footer">
+    <div class="containerjon">
+        <div class="footer-section">
+            <h2>Bizning kompaniya</h2>
+            <div class="underline"></div>
+            <p>Ajoyib mahsulotlar va xizmatlar uchun yagona manzil. Biz bilan bog‘laning va so‘nggi takliflarimiz hamda
+                maxsus chegirmalarimizdan xabardor bo‘ling.</p>
+            <div class="social-icons">
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-linkedin"></i></a>
+            </div>
+        </div>
+
+        <div class="footer-section">
+            <h2>Tezkor havolalar</h2>
+            <div class="underline"></div>
+            <ul>
+                <li><a href="store.html">Asosiy</a></li>
+                <li><a href="#">Kategoriyalar</a></li>
+                <li><a href="contact.html">Kontakt</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-section">
+            <h2>Aloqada bo'ling</h2>
+            <div class="underline"></div>
+            <input type="email" placeholder="Telefon raqam kiriting..." class="email-input">
+            <button class="subscribe-btn">Obuna bo'lish</button>
+        </div>
+    </div>
+</footer>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="js/request.js"></script>
+<script src="js/modal.js"></script>
+
+<script>
+
+
+
+    function checkUserAuth() {
+        let token = localStorage.getItem("token");
+        let authButton = document.getElementById("authButton");
+        let userProfile = document.getElementById("userProfile");
+        let usernameDisplay = document.getElementById("usernameDisplay");
+        let logoutBtn = document.getElementById("logoutBtn");
+        let adminPageLink = document.querySelector(".admin-page");
+
+        if (token) {
+            const decodedToken = jwt_decode(token);
+            const username = decodedToken.sub || "User";
+            const roles = decodedToken.roles || [];
+
+            usernameDisplay.innerText = username;
+            userProfile.style.display = "block";
+            authButton.style.display = "none";
+
+            if (roles.includes("ADMIN")) {
+                adminPageLink.style.display = "block";
+            } else {
+                adminPageLink.style.display = "none";
+            }
+
+            logoutBtn.onclick = function () {
+                localStorage.removeItem("token");
+                window.location.reload();
+            };
+        } else {
+            userProfile.style.display = "none";
+            adminPageLink.style.display = "none";
+            authButton.innerText = "Login";
+            authButton.onclick = function () {
+                window.location.href = "login.html";
+            };
+            authButton.style.display = "block";
+        }
+    }
+
+    checkUserAuth();
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.querySelector('form');
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            const formData = {
+                fullName: form.querySelector('input[type="text"]').value,
+                email: form.querySelector('input[type="email"]').value,
+                phone: form.querySelector('#phoneNumber').value,
+                message: form.querySelector('textarea').value
+            };
+
+            request.post('/user/set-inquiry', formData)
+                .then(response => {
+                    alert('Your inquiry has been successfully submitted!');
+                    form.reset(); // Reset the form after successful submission
+                })
+                .catch(error => {
+                    console.error('There was an error submitting the inquiry!', error);
+                    alert('There was an error submitting your inquiry. Please try again.');
+                });
+        });
+    });
+</script>
+</body>
+</html>
