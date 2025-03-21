@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import uz.pdp.salemartpro.dto.*;
@@ -67,6 +68,7 @@ public class UserController {
         userService.sendVerificationCode(email);
         return ResponseEntity.ok("Verification code sent to your email.");
     }
+
     @PostMapping("/send-reset-code")
     public ResponseEntity<String> sendResetVerificationCode(@RequestParam String email) {
         if (!userRepository.existsByEmail(email)) {
@@ -130,4 +132,33 @@ public class UserController {
         inquiryRepository.save(inquiry);
         return ResponseEntity.ok().body("Inquiry submitted successfully");
     }
+
+    //    behruz
+
+    @GetMapping("/{username}")
+    public ResponseEntity<UserDto> getUserByUsername(@PathVariable String username) {
+        UserDto user = userService.findByUsername(username);
+        return ResponseEntity.ok(user);
+    }
+
+
+    @PutMapping("/update/{username}")
+    public ResponseEntity<?> updateUser(@RequestBody UserUpdateDto userUpdateDto, @PathVariable String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        if (userUpdateDto.getUsername() != null) {
+            user.setUsername(userUpdateDto.getUsername());
+        }
+
+        if (userUpdateDto.getPhoneNumber() != null) {
+            user.setPhone(userUpdateDto.getPhoneNumber());
+        }
+
+        userRepository.save(user);
+
+        return ResponseEntity.ok("Profile updated successfully!");
+    }
+
+
 }
