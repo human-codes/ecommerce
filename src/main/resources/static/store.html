@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <title>ShopNow</title>
     <style>
-
+        /* Existing styles */
         .navbar {
             background-color: #fff;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -233,13 +233,13 @@
 
         .profile:hover,
         .profile.active {
-            color: #fff !important; /* Oq rangga o‘tadi */
+            color: #fff !important; /* Oq rangga o'tadi */
             background-color: #6c757d !important; /* Yashil fon */
 
         }
 
         .cart-icons a:hover {
-            color: #198754; /* Yashil rangga o‘tadi */
+            color: #198754; /* Yashil rangga o'tadi */
         }
 
         .cart-icons i {
@@ -247,7 +247,7 @@
         }
 
         .cart-badge {
-            font-size: 12px; /* Savat belgisi soni kichikroq bo‘lsin */
+            font-size: 12px; /* Savat belgisi soni kichikroq bo'lsin */
             background: red;
             color: white;
             border-radius: 50%;
@@ -556,7 +556,7 @@
             cursor: pointer;
         }
 
-        /* Saralangan mahsulotlar ro‘yxati */
+        /* Saralangan mahsulotlar ro'yxati */
         .favorites-list {
             margin-top: 15px;
         }
@@ -989,12 +989,83 @@
             }
         }
 
+        /* Pagination styles */
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
 
+        .pagination {
+            display: flex;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .page-item {
+            margin: 0 5px;
+        }
+
+        .page-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #f8f9fa;
+            color: #28a745;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            border: 1px solid #dee2e6;
+        }
+
+        .page-link:hover {
+            background-color: #e9ecef;
+            color: #28a745;
+        }
+
+        .page-item.active .page-link {
+            background-color: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+
+        .page-item.disabled .page-link {
+            color: #6c757d;
+            pointer-events: none;
+            background-color: #f8f9fa;
+            border-color: #dee2e6;
+        }
+
+        .page-link-text {
+            width: auto;
+            padding: 0 15px;
+            border-radius: 20px;
+        }
+
+        .no-products-message {
+            text-align: center;
+            padding: 40px 0;
+            color: #6c757d;
+        }
+
+        .no-products-message i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: #28a745;
+        }
+
+        .no-products-message h4 {
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-
 </head>
 
 <body>
@@ -1063,7 +1134,7 @@
         <div class="ad-slide active">
             <div class="ad-content">
                 <h2>48V zarbaviy buragich</h2>
-                <p>Akkumulyatorli drel, 24 ta buyumdan iborat to‘plam.</p>
+                <p>Akkumulyatorli drel, 24 ta buyumdan iborat to'plam.</p>
                 <button class="ad-btn">Batafsil</button>
             </div>
             <img src="images/reklama/img.png" alt="Reklama 1">
@@ -1072,16 +1143,16 @@
         <div class="ad-slide">
             <div class="ad-content">
                 <h2>Kuchli elektr perforator</h2>
-                <p>Beton, yog‘och va metall uchun qulay vosita.</p>
-                <button class="ad-btn">Ko‘rish</button>
+                <p>Beton, yog'och va metall uchun qulay vosita.</p>
+                <button class="ad-btn">Ko'rish</button>
             </div>
             <img src="images/reklama/img_2.png" alt="Reklama 2">
         </div>
 
         <div class="ad-slide">
             <div class="ad-content">
-                <h2>Universal asboblar to‘plami</h2>
-                <p>Turli xil uy sharoitida ta'mirlash uchun zarur bo‘lgan vositalar.</p>
+                <h2>Universal asboblar to'plami</h2>
+                <p>Turli xil uy sharoitida ta'mirlash uchun zarur bo'lgan vositalar.</p>
                 <button class="ad-btn">Harid qilish</button>
             </div>
             <img src="images/reklama/img_3.png" alt="Reklama 3">
@@ -1112,6 +1183,13 @@
         <div class="category-list" id="categoryList"></div>
     </div>
     <div class="row mt-4" id="products"></div>
+
+    <!-- Pagination Container -->
+    <div class="pagination-container">
+        <ul class="pagination" id="pagination">
+            <!-- Pagination will be generated here -->
+        </ul>
+    </div>
 </div>
 
 <footer class="footer">
@@ -1119,8 +1197,8 @@
         <div class="footer-section">
             <h2>Bizning kompaniya</h2>
             <div class="underline"></div>
-            <p>Ajoyib mahsulotlar va xizmatlar uchun yagona manzil. Biz bilan bog‘laning va so‘nggi takliflarimiz hamda
-                maxsus chegirmalarimizdan xabardor bo‘ling.</p>
+            <p>Ajoyib mahsulotlar va xizmatlar uchun yagona manzil. Biz bilan bog'laning va so'nggi takliflarimiz hamda
+                maxsus chegirmalarimizdan xabardor bo'ling.</p>
             <div class="social-icons">
                 <a href="#"><i class="fab fa-facebook"></i></a>
                 <a href="#"><i class="fab fa-twitter"></i></a>
@@ -1211,6 +1289,7 @@
 <script src="js/modal.js"></script>
 
 <script>
+    // Global variables
     let categoryList = document.getElementById("categoryList");
     let productList = document.getElementById("products");
     let cartSize = document.getElementById("cartSize");
@@ -1219,6 +1298,10 @@
     let allProducts = []; // Store all products for search functionality
     let currentCategoryId = 0; // Track current category
 
+    // Pagination variables
+    const PRODUCTS_PER_PAGE = 8; // Number of products per page
+    let currentPageNum = 1;
+    let totalPages = 1;
 
     // Search functionality
     const searchInput = document.querySelector('#searchInput');
@@ -1226,6 +1309,7 @@
         let query = this.value.trim().toLowerCase();
         filterProducts(query);
     });
+
     function filterProducts(query) {
         if (currentCategoryId === 0) {
             // If on "All" category, search through all products
@@ -1237,11 +1321,16 @@
                     method: 'get'
                 })
                     .then(res => {
-                        let filteredProducts = res.data.filter(product =>
+                        allProducts = res.data;
+                        let filteredProducts = allProducts.filter(product =>
                             product.name.toLowerCase().includes(query) ||
                             product.category.name.toLowerCase().includes(query)
                         );
-                        displayProducts(filteredProducts);
+
+                        // Reset to first page when searching
+                        currentPageNum = 1;
+                        renderPagination(filteredProducts.length);
+                        displayProductsPage(filteredProducts, 1);
                     })
                     .catch(error => {
                         console.error("Error fetching products:", error);
@@ -1254,14 +1343,22 @@
                 method: 'get'
             })
                 .then(res => {
+                    allProducts = res.data;
                     if (query === '') {
-                        displayProducts(res.data);
+                        // Reset to first page when clearing search
+                        currentPageNum = 1;
+                        renderPagination(allProducts.length);
+                        displayProductsPage(allProducts, 1);
                     } else {
-                        let filteredProducts = res.data.filter(product =>
+                        let filteredProducts = allProducts.filter(product =>
                             product.name.toLowerCase().includes(query) ||
                             product.category.name.toLowerCase().includes(query)
                         );
-                        displayProducts(filteredProducts);
+
+                        // Reset to first page when searching
+                        currentPageNum = 1;
+                        renderPagination(filteredProducts.length);
+                        displayProductsPage(filteredProducts, 1);
                     }
                 })
                 .catch(error => {
@@ -1269,12 +1366,220 @@
                 });
         }
     }
+
+    // Display products for the current page
+    function displayProductsPage(products, page) {
+        const startIndex = (page - 1) * PRODUCTS_PER_PAGE;
+        const endIndex = Math.min(startIndex + PRODUCTS_PER_PAGE, products.length);
+        const productsToDisplay = products.slice(startIndex, endIndex);
+
+        displayProducts(productsToDisplay);
+        currentPageNum = page;
+        updatePaginationActive();
+    }
+
+    // Render pagination controls
+    function renderPagination(totalItems) {
+        totalPages = Math.ceil(totalItems / PRODUCTS_PER_PAGE);
+        let paginationHtml = '';
+
+        // Previous button
+        paginationHtml += `
+            <li class="page-item ${currentPageNum === 1 ? 'disabled' : ''}">
+                <a class="page-link" href="#" onclick="changePage(${currentPageNum - 1}); return false;">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+            </li>
+        `;
+
+        // Page numbers
+        const maxVisiblePages = 5;
+        let startPage = Math.max(1, currentPageNum - Math.floor(maxVisiblePages / 2));
+        let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+        // Adjust start page if we're near the end
+        if (endPage - startPage + 1 < maxVisiblePages) {
+            startPage = Math.max(1, endPage - maxVisiblePages + 1);
+        }
+
+        // First page and ellipsis if needed
+        if (startPage > 1) {
+            paginationHtml += `
+                <li class="page-item">
+                    <a class="page-link" href="#" onclick="changePage(1); return false;">1</a>
+                </li>
+            `;
+            if (startPage > 2) {
+                paginationHtml += `
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                `;
+            }
+        }
+
+        // Page numbers
+        for (let i = startPage; i <= endPage; i++) {
+            paginationHtml += `
+                <li class="page-item ${i === currentPageNum ? 'active' : ''}">
+                    <a class="page-link" href="#" onclick="changePage(${i}); return false;">${i}</a>
+                </li>
+            `;
+        }
+
+        // Last page and ellipsis if needed
+        if (endPage < totalPages) {
+            if (endPage < totalPages - 1) {
+                paginationHtml += `
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                `;
+            }
+            paginationHtml += `
+                <li class="page-item">
+                    <a class="page-link" href="#" onclick="changePage(${totalPages}); return false;">${totalPages}</a>
+                </li>
+            `;
+        }
+
+        // Next button
+        paginationHtml += `
+            <li class="page-item ${currentPageNum === totalPages || totalPages === 0 ? 'disabled' : ''}">
+                <a class="page-link" href="#" onclick="changePage(${currentPageNum + 1}); return false;">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>
+        `;
+
+        document.getElementById("pagination").innerHTML = paginationHtml;
+    }
+
+    // Change page function
+    function changePage(page) {
+        if (page < 1 || page > totalPages || page === currentPageNum) {
+            return;
+        }
+
+        // Scroll to top of products
+        window.scrollTo({
+            top: document.querySelector('.containeri').offsetTop,
+            behavior: 'smooth'
+        });
+
+        // Get current products based on category and search
+        const query = document.getElementById('searchInput').value.trim().toLowerCase();
+
+        if (query === '') {
+            // No search query, just get products by category
+            if (currentCategoryId === 0) {
+                request({
+                    url: `/product/0`,
+                    method: 'get'
+                })
+                    .then(res => {
+                        allProducts = res.data;
+                        displayProductsPage(allProducts, page);
+                    })
+                    .catch(error => {
+                        console.error("Error fetching products:", error);
+                    });
+            } else {
+                request({
+                    url: `/product/${currentCategoryId}`,
+                    method: 'get'
+                })
+                    .then(res => {
+                        allProducts = res.data;
+                        displayProductsPage(allProducts, page);
+                    })
+                    .catch(error => {
+                        console.error("Error fetching category products:", error);
+                    });
+            }
+        } else {
+            // With search query, filter the products
+            if (currentCategoryId === 0) {
+                request({
+                    url: `/product/0`,
+                    method: 'get'
+                })
+                    .then(res => {
+                        allProducts = res.data;
+                        let filteredProducts = allProducts.filter(product =>
+                            product.name.toLowerCase().includes(query) ||
+                            product.category.name.toLowerCase().includes(query)
+                        );
+                        displayProductsPage(filteredProducts, page);
+                    })
+                    .catch(error => {
+                        console.error("Error fetching products:", error);
+                    });
+            } else {
+                request({
+                    url: `/product/${currentCategoryId}`,
+                    method: 'get'
+                })
+                    .then(res => {
+                        allProducts = res.data;
+                        let filteredProducts = allProducts.filter(product =>
+                            product.name.toLowerCase().includes(query) ||
+                            product.category.name.toLowerCase().includes(query)
+                        );
+                        displayProductsPage(filteredProducts, page);
+                    })
+                    .catch(error => {
+                        console.error("Error fetching category products:", error);
+                    });
+            }
+        }
+    }
+
+    // Update active pagination item
+    function updatePaginationActive() {
+        const paginationItems = document.querySelectorAll('#pagination .page-item');
+        paginationItems.forEach(item => {
+            const pageLink = item.querySelector('.page-link');
+            if (pageLink && pageLink.textContent === currentPageNum.toString()) {
+                item.classList.add('active');
+            } else if (!pageLink || pageLink.textContent !== currentPageNum.toString()) {
+                item.classList.remove('active');
+            }
+        });
+
+        // Update prev/next buttons
+        const prevButton = document.querySelector('#pagination .page-item:first-child');
+        const nextButton = document.querySelector('#pagination .page-item:last-child');
+
+        if (prevButton) {
+            if (currentPageNum === 1) {
+                prevButton.classList.add('disabled');
+            } else {
+                prevButton.classList.remove('disabled');
+            }
+        }
+
+        if (nextButton) {
+            if (currentPageNum === totalPages || totalPages === 0) {
+                nextButton.classList.add('disabled');
+            } else {
+                nextButton.classList.remove('disabled');
+            }
+        }
+    }
+
     function displayProducts(products) {
         let s = '';
         basketItems = loadBasket(); // Savatni qayta yuklash
 
         if (products.length === 0) {
-            productList.innerHTML = '<div class="text-center p-5">No products found matching your search.</div>';
+            productList.innerHTML = `
+                <div class="no-products-message col-12">
+                    <i class="bi bi-search"></i>
+                    <h4>Mahsulotlar topilmadi</h4>
+                    <p>Boshqa so'rov bilan qayta urinib ko'ring</p>
+                </div>
+            `;
             return;
         }
 
@@ -1339,6 +1644,7 @@
         // Update liked products UI
         updateLikedProductsUI();
     }
+
     function showLikedProducts() {
         let productElement = document.getElementById('favorites-list');
         productElement.innerHTML = ''; // Oldingi ma'lumotlarni tozalash
@@ -1349,8 +1655,8 @@
         if (likedProducts.length === 0) {
             productElement.innerHTML = `
             <div class="empty-likes text-center mt-5">
-                <h4 class="text-danger mt-3">Hech qanday tanlangan mahsulot yo‘q</h4>
-                <p>Mahsulotlarni yoqtiring va ularni shu yerda ko‘ring.</p>
+                <h4 class="text-danger mt-3">Hech qanday tanlangan mahsulot yo'q</h4>
+                <p>Mahsulotlarni yoqtiring va ularni shu yerda ko'ring.</p>
             </div>
         `;
             return;
@@ -1382,7 +1688,7 @@
 
         // 🛒 Savatda borligini tekshirish
         let inBasket = basketItems.has(product.id);
-        let buttonColor = inBasket ? "red" : "#121827"; // 🟥 Agar bor bo‘lsa, qizil bo‘lmasa ko‘k
+        let buttonColor = inBasket ? "red" : "#121827"; // 🟥 Agar bor bo'lsa, qizil bo'lmasa ko'k
 
         rowElement.innerHTML += `<div class="col-lg-4 col-md-4 col-sm-6 mb-4"> <!-- Enini kattalashtirdik -->
     <div class="product-card d-flex flex-column"
@@ -1410,7 +1716,7 @@
         <!-- Pastki qism -->
         <div class="bottom-container" style="display: flex; justify-content: space-between; align-items: center; position: absolute; bottom: 10px; left: 10px; right: 10px;">
 
-            <!-- Savatga qo‘shish tugmasi -->
+            <!-- Savatga qo'shish tugmasi -->
             <button onclick="addToBasket(${product.id}, event); event.stopPropagation();" class="add-to-cart"
                 style="background:${buttonColor}; color: white; display: flex; align-items: center; justify-content: center; gap: 5px; width: 50px; height: 50px; border-radius: 10px;">
                 <i class="${inBasket ? 'bi bi-bag-check-fill' : 'bi bi-bag-plus'}" style="pointer-events: none; font-size: 20px;"></i>
@@ -1445,12 +1751,12 @@
         let ratingContainer = document.getElementById(`rating-${productId}`);
 
         if (ratings[productId] === rating) {
-            // Agar allaqachon shu baho bosilgan bo‘lsa, o‘chiramiz
+            // Agar allaqachon shu baho bosilgan bo'lsa, o'chiramiz
             delete ratings[productId];
             ratingContainer.setAttribute("data-rated", "false");
             updateStars(ratingContainer, 0);
         } else {
-            // Yangi baho qo‘yish
+            // Yangi baho qo'yish
             ratings[productId] = rating;
             updateStars(ratingContainer, rating);
             ratingContainer.setAttribute("data-rated", "true");
@@ -1475,6 +1781,9 @@
 
     // Sahifa yuklanganda LocalStorage'dan baholarni olib qayta chizish
     function restoreRatings() {
+        // let ratings = getRatings(); // LocalStorage'dan baholarni olish
+
+        // Mahsulotlar  {
         let ratings = getRatings(); // LocalStorage'dan baholarni olish
 
         // Mahsulotlar yuklanguncha kutish
@@ -1504,13 +1813,13 @@
         }, 100); // Har 100ms da tekshiradi
     }
 
-    // Sahifa to‘liq yuklanganda ishlaydi
+    // Sahifa to'liq yuklanganda ishlaydi
     document.addEventListener("DOMContentLoaded", () => {
         restoreRatings();
     });
 
     document.querySelectorAll(".navbar .navbar-brand").forEach(link => {
-        // Agar linkning href'ida hozirgi sahifa bo‘lsa, 'active' klassini qo‘shamiz
+        // Agar linkning href'ida hozirgi sahifa bo'lsa, 'active' klassini qo'shamiz
         if (link.getAttribute("href") === currentPage) {
             link.classList.add("active");
         }
@@ -1533,19 +1842,19 @@
         let basketItems = loadBasket(); // Savatni qayta yuklash
 
         if (basketItems.has(productId.toString())) {
-            basketItems.delete(productId.toString()); // Agar bor bo‘lsa, olib tashlash
-            button.style.background = "#121827"; // Tugma rangini qayta o‘zgartirish
+            basketItems.delete(productId.toString()); // Agar bor bo'lsa, olib tashlash
+            button.style.background = "#121827"; // Tugma rangini qayta o'zgartirish
             icon.className = "bi bi-bag-plus"; // Ikonkani yangilash
         } else {
-            basketItems.set(productId.toString(), 1); // Agar yo‘q bo‘lsa, qo‘shish
-            button.style.background = "red"; // Tugma rangini o‘zgartirish
-            icon.className = "bi bi-bag-check-fill"; // Ikonkani o‘zgartirish
+            basketItems.set(productId.toString(), 1); // Agar yo'q bo'lsa, qo'shish
+            button.style.background = "red"; // Tugma rangini o'zgartirish
+            icon.className = "bi bi-bag-check-fill"; // Ikonkani o'zgartirish
         }
 
         // 🟢 Yangilangan basketni saqlash
         localStorage.setItem("basketItems", JSON.stringify(Object.fromEntries(basketItems)));
 
-        // 🟢 Savat o‘zgarishini bildirish (REAL-TIME yangilash)
+        // 🟢 Savat o'zgarishini bildirish (REAL-TIME yangilash)
         localStorage.setItem("basketUpdated", Date.now());
 
         basketSize();
@@ -1609,12 +1918,21 @@
         // Clear search input when changing categories
         document.getElementById('searchInput').value = '';
 
+        // Reset to first page when changing categories
+        currentPageNum = 1;
+
         request({
             url: `/product/${categoryId}`,
             method: 'get'
         })
             .then(res => {
-                displayProducts(res.data);
+                allProducts = res.data;
+
+                // Render pagination based on total products
+                renderPagination(allProducts.length);
+
+                // Display first page of products
+                displayProductsPage(allProducts, 1);
 
                 document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
                 document.getElementById(`category-${categoryId}`)?.classList.add('active');
@@ -1712,7 +2030,7 @@
 
             let productCard = document.querySelector(`.product-card[data-product*='"id":${productId}']`);
             if (productCard) {
-                productCard.parentElement.remove(); // Ota divni o‘chirish
+                productCard.parentElement.remove(); // Ota divni o'chirish
             }
         } else {
             likedProducts.push(productIdStr);
@@ -1891,12 +2209,12 @@
             }
         });
 
-        index = (index + 1) % slides.length; // Keyingi rasmga o‘tish
+        index = (index + 1) % slides.length; // Keyingi rasmga o'tish
     }
 
     setInterval(changeSlide, 3000); // Har 4 soniyada almashish
 
-    // Sahifa yuklangandan keyin loading ekranini o‘chiramiz
+    // Sahifa yuklangandan keyin loading ekranini o'chiramiz
     window.onload = function () {
         setTimeout(() => {
             document.getElementById("loading").style.display = "none";
