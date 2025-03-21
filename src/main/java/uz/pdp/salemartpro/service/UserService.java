@@ -5,12 +5,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import uz.pdp.salemartpro.dto.LoginDto;
-import uz.pdp.salemartpro.dto.LoginResponse;
-import uz.pdp.salemartpro.dto.RegisterDto;
-import uz.pdp.salemartpro.dto.ResetPasswordRequest;
+import uz.pdp.salemartpro.dto.*;
 import uz.pdp.salemartpro.entity.User;
 import uz.pdp.salemartpro.repo.UserRepository;
 import uz.pdp.salemartpro.security.JwtService;
@@ -111,5 +109,12 @@ public class UserService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("This phone number is already in use.");
         }
         return ResponseEntity.ok("User details are unique.");
+    }
+
+    public UserDto findByUsername(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        return new UserDto(user.getUsername(), user.getEmail(),user.getPhone());
     }
 }
