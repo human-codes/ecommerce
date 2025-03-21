@@ -60,11 +60,11 @@ public class AdminController {
     public HttpEntity<?> deleteProduct(@PathVariable int id) {
         return adminServiceI.deleteProduct(id);
     }
-
-    @GetMapping("/deliverers")
+    @GetMapping("/delivers")
     public HttpEntity<?> getDeliverers() {
         return adminServiceI.getDeliverers();
     }
+
 
     @GetMapping("/operators")
     public HttpEntity<?> getOperators() {
