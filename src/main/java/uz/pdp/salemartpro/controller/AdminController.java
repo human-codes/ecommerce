@@ -10,11 +10,16 @@ import org.springframework.web.bind.annotation.*;
 import uz.pdp.salemartpro.dto.*;
 import uz.pdp.salemartpro.entity.Delivery;
 import uz.pdp.salemartpro.entity.Operator;
+import uz.pdp.salemartpro.entity.Order;
+import uz.pdp.salemartpro.entity.enums.DelivererStatus;
+import uz.pdp.salemartpro.repo.DeliveryRepository;
+import uz.pdp.salemartpro.repo.OrderRepository;
 import uz.pdp.salemartpro.service.AdminServiceI;
 import uz.pdp.salemartpro.service.DelivereyServis;
 import uz.pdp.salemartpro.service.OperatorService;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -25,10 +30,15 @@ public class AdminController {
     private final AdminServiceI adminServiceI;
     private final DelivereyServis delivereyServis;
     private final OperatorService operatorService;
-    public AdminController(AdminServiceI adminServiceI, DelivereyServis delivereyServis, OperatorService operatorService) {
+    private final DeliveryRepository deliveryRepository;
+    private final OrderRepository orderRepository;
+
+    public AdminController(AdminServiceI adminServiceI, DelivereyServis delivereyServis, OperatorService operatorService, DeliveryRepository deliveryRepository, OrderRepository orderRepository) {
         this.adminServiceI = adminServiceI;
         this.delivereyServis = delivereyServis;
         this.operatorService = operatorService;
+        this.deliveryRepository = deliveryRepository;
+        this.orderRepository = orderRepository;
     }
 
     @DeleteMapping("/category/{id}")
@@ -176,5 +186,22 @@ public class AdminController {
         return adminServiceI.getDeliverer(id);
     }
 
+    @GetMapping("/deliverers/available")
+    public HttpEntity<?> getAvailableDeliverer() {
+        List<Delivery> all = deliveryRepository.findAll();
+        List<Delivery> availableDeliverers = all.stream()
+                .filter(item -> item.getIsOnline() && item.getDelivererStatus()
+                        .equals(DelivererStatus.AVAILABLE)).toList();
+
+        return ResponseEntity.ok(availableDeliverers);
+    }
+
+    @GetMapping("/orders/unassigned")
+    public HttpEntity<?> getUnassignedOrders() {
+        List<Order> byIsAttached = orderRepository.findByIsAttached(false);
+        return ResponseEntity.ok(byIsAttached);
+    }
 
 }
+
+//security, status delivery string,

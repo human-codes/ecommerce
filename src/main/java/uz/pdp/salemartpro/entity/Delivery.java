@@ -1,9 +1,9 @@
 package uz.pdp.salemartpro.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
+import uz.pdp.salemartpro.entity.enums.DelivererStatus;
+
 
 @Entity
 @Table(name = "deliveries")
@@ -15,4 +15,8 @@ public class Delivery extends BaseUser {
     @Column(unique = true)
     private Long telegramId;
 
+    private Boolean isOnline=true;
+
+    @Enumerated(EnumType.STRING)
+    private DelivererStatus delivererStatus=DelivererStatus.AVAILABLE;
 }
