@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Delivery Map</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+
+        #map {
+            width: 100%;
+            height: 500px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .delivery-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .route-table {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .deliverer-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .deliverer-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .deliverer-card.selected {
+            border: 2px solid #1ecb63;
+            background-color: rgba(30, 203, 99, 0.1);
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-available {
+            background-color: rgba(30, 203, 99, 0.2);
+            color: #1ecb63;
+        }
+
+        .status-on-delivery {
+            background-color: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+        }
+
+        .status-unavailable {
+            background-color: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+        }
+
+        .action-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .clear-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+        }
+
+        .clear-btn:hover {
+            background-color: #c82333;
+            transform: translateY(-2px);
+        }
+
+        .confirm-btn {
+            background-color: #0a192f;
+            color: white;
+            border: none;
+        }
+
+        .confirm-btn:hover {
+            background-color: #1ecb63;
+            transform: translateY(-2px);
+        }
+
+        .section-title {
+            color: #0a192f;
+            font-weight: bold;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #1ecb63;
+            display: inline-block;
+        }
+
+        .table-header {
+            background-color: #0a192f;
+            color: white;
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 15px 10px 40px;
+            border-radius: 8px;
+            border: 1px solid #ced4da;
+            font-size: 16px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 13px;
+            color: #6c757d;
+        }
+
+        .order-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+
+        .order-pending {
+            background-color: #ffc107;
+            color: #212529;
+        }
+
+        .order-processing {
+            background-color: #17a2b8;
+            color: white;
+        }
+
+        .order-completed {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .order-cancelled {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .loading-spinner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100px;
+        }
+
+        .loading-spinner i {
+            font-size: 40px;
+            color: #0a192f;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .route-summary {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .route-summary h4 {
+            color: #0a192f;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+
+        .summary-label {
+            font-weight: 500;
+            color: #6c757d;
+        }
+
+        .summary-value {
+            font-weight: 600;
+            color: #212529;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: #6c757d;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: #dee2e6;
+        }
+
+        .empty-state p {
+            font-size: 16px;
+            margin-bottom: 0;
+        }
+
+        .table-responsive {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <h2 class="text-center mb-4">Admin Delivery Management</h2>
+
+    <div class="delivery-container">
+        <h3 class="section-title">Delivery Map</h3>
+        <div id="map"></div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="delivery-container">
+                <h3 class="section-title">Selected Route</h3>
+                <div id="route-empty-state" class="empty-state">
+                    <i class="fas fa-route"></i>
+                    <h4>No Route Selected</h4>
+                    <p>Click on order markers on the map to create a delivery route</p>
+                </div>
+                <div id="route-table-container" class="route-table" style="display: none;">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead class="table-header">
+                            <tr>
+                                <th width="5%">#</th>
+                                <th width="40%">From</th>
+                                <th width="40%">To</th>
+                                <th width="15%">Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody id="route-table-body">
+                            <!-- Route items will be added here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="route-summary" id="route-summary" style="display: none;">
+                    <h4>Route Summary</h4>
+                    <div class="summary-item">
+                        <span class="summary-label">Total Orders:</span>
+                        <span class="summary-value" id="total-orders">0</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Selected Deliverer:</span>
+                        <span class="summary-value" id="selected-deliverer">None</span>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between mt-3">
+                    <button class="btn action-btn clear-btn" onclick="clearRoutes()" id="clearRouteBtn" disabled>
+                        <i class="fas fa-trash-alt me-2"></i>Clear Route
+                    </button>
+                    <button class="btn action-btn confirm-btn" onclick="confirmRoute()" id="confirmRouteBtn" disabled>
+                        <i class="fas fa-check me-2"></i>Confirm Route
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="delivery-container">
+                <h3 class="section-title">Available Deliverers</h3>
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="delivererSearch" placeholder="Search deliverers..." onkeyup="filterDeliverers()">
+                </div>
+                <div id="deliverers-container">
+                    <div class="loading-spinner">
+                        <i class="fas fa-spinner"></i>
+                    </div>
+                    <!-- Deliverers will be added here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Yandex Maps API -->
+<script src="https://api-maps.yandex.ru/2.1/?lang=en_RU"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="js/request.js"></script>
+
+<script>
+    // Global variables
+    let companyLocation = null;
+    let orders = [];
+    let currentRoutes = [];
+    let map;
+    let routePolylines = [];
+    let routeTableBody = document.getElementById('route-table-body');
+    let selectedDelivererId = null;
+    let selectedDelivererName = null;
+    let deliverers = [];
+
+    // Initialize map when Yandex Maps API is ready
+    ymaps.ready(initMap);
+
+    function initMap() {
+        map = new ymaps.Map("map", {
+            center: [41.3, 69.2],
+            zoom: 12
+        });
+
+        fetchData();
+    }
+
+    async function fetchData() {
+        try {
+            // Fetch company location
+            const companyRes = await request.get('/address/company');
+            companyLocation = companyRes.data;
+
+            // Fetch unassigned orders
+            const ordersRes = await request.get('/admin/orders/unassigned');
+            orders = ordersRes.data;
+
+            // Fetch available deliverers
+            const deliverersRes = await request.get('/admin/deliverers/available');
+            deliverers = deliverersRes.data;
+
+            // Display data on the map and in the UI
+            displayCompany();
+            displayOrders();
+            displayDeliverers();
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            showAlert("Error loading data. Please try again.", "danger");
+        }
+    }
+
+    function displayCompany() {
+        if (!companyLocation) return;
+
+        map.setCenter([companyLocation.latitude, companyLocation.longitude], 12);
+
+        let companyPlacemark = new ymaps.Placemark(
+            [companyLocation.latitude, companyLocation.longitude],
+            { balloonContent: `<b>Company:</b><br>${companyLocation.fullAddress}` },
+            { preset: 'islands#redDotIcon' }
+        );
+
+        map.geoObjects.add(companyPlacemark);
+    }
+
+    function displayOrders() {
+        if (orders.length === 0) {
+            showAlert("No unassigned orders found.", "info");
+            return;
+        }
+
+        orders.forEach(order => {
+            // Get the address from the order's deliveredAddress
+            const address = order.deliveredAddress;
+
+            if (!address || !address.latitude || !address.longitude) {
+                console.warn(`Order ${order.id} has invalid address data`);
+                return;
+            }
+
+            let orderPlacemark = new ymaps.Placemark(
+                [address.latitude, address.longitude],
+                {
+                    balloonContent: `
+                            <div style="padding: 10px;">
+                                <h5>Order #${order.id}</h5>
+                                <p><b>Customer:</b> ${order.user.username}</p>
+                                <p><b>Address:</b> ${address.fullAddress}</p>
+                                <p><b>Phone:</b> ${order.phoneNumber || 'N/A'}</p>
+                                ${order.notes ? `<p><b>Notes:</b> ${order.notes}</p>` : ''}
+                                <p><b>Status:</b> ${order.status}</p>
+                            </div>
+                        `
+                },
+                { preset: 'islands#blueDotIcon' }
+            );
+
+            orderPlacemark.events.add('click', function () {
+                handleOrderSelection(order);
+            });
+
+            map.geoObjects.add(orderPlacemark);
+        });
+    }
+
+    function displayDeliverers() {
+        const deliverersContainer = document.getElementById('deliverers-container');
+        deliverersContainer.innerHTML = '';
+
+        if (deliverers.length === 0) {
+            deliverersContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-user-slash"></i>
+                        <h4>No Available Deliverers</h4>
+                        <p>There are no available deliverers at the moment</p>
+                    </div>
+                `;
+            return;
+        }
+
+        deliverers.forEach(deliverer => {
+            const statusClass = getStatusClass(deliverer.delivererStatus);
+            const statusText = formatStatus(deliverer.delivererStatus);
+            const isOnline = deliverer.isOnline ? 'Online' : 'Offline';
+            const onlineClass = deliverer.isOnline ? 'text-success' : 'text-secondary';
+            const fullName = deliverer.username;
+
+            const delivererCard = document.createElement('div');
+            delivererCard.className = 'deliverer-card';
+            delivererCard.dataset.id = deliverer.id;
+            delivererCard.dataset.name = fullName.toLowerCase();
+            delivererCard.dataset.vehicle = (deliverer.vehicleNumber || '').toLowerCase();
+
+            delivererCard.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5>${fullName || 'Unnamed Deliverer'}</h5>
+                            <p class="mb-1">
+                                <i class="fas fa-truck me-2"></i>
+                                Vehicle: ${deliverer.vehicleNumber || 'N/A'}
+                            </p>
+                            <p class="mb-0 ${onlineClass}">
+                                <i class="fas fa-circle me-1" style="font-size: 10px;"></i>${isOnline}
+                            </p>
+                        </div>
+                        <span class="status-badge ${statusClass}">${statusText}</span>
+                    </div>
+                `;
+
+            delivererCard.addEventListener('click', function() {
+                // Remove selected class from all cards
+                document.querySelectorAll('.deliverer-card').forEach(card => {
+                    card.classList.remove('selected');
+                });
+
+                // Add selected class to this card
+                this.classList.add('selected');
+
+                // Set selected deliverer ID and name
+                selectedDelivererId = deliverer.id;
+                selectedDelivererName = fullName || 'Unnamed Deliverer';
+
+                // Update summary
+                document.getElementById('selected-deliverer').textContent = selectedDelivererName;
+
+                // Enable confirm button if we have both routes and a deliverer
+                document.getElementById('confirmRouteBtn').disabled = currentRoutes.length === 0;
+            });
+
+            deliverersContainer.appendChild(delivererCard);
+        });
+    }
+
+    function filterDeliverers() {
+        const searchInput = document.getElementById('delivererSearch');
+        const filter = searchInput.value.toLowerCase();
+        const delivererCards = document.querySelectorAll('.deliverer-card');
+
+        delivererCards.forEach(card => {
+            const name = card.dataset.name;
+            const vehicle = card.dataset.vehicle;
+
+            if (name.includes(filter) || vehicle.includes(filter)) {
+                card.style.display = '';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    function getStatusClass(status) {
+        switch(status) {
+            case 'AVAILABLE':
+                return 'status-available';
+            case 'ON_DELIVERY':
+                return 'status-on-delivery';
+            case 'UNAVAILABLE':
+                return 'status-unavailable';
+            default:
+                return '';
+        }
+    }
+
+    function formatStatus(status) {
+        switch(status) {
+            case 'AVAILABLE':
+                return 'Available';
+            case 'ON_DELIVERY':
+                return 'On Delivery';
+            case 'UNAVAILABLE':
+                return 'Unavailable';
+            default:
+                return status;
+        }
+    }
+
+    function handleOrderSelection(order) {
+        if (!companyLocation) return;
+
+        if (currentRoutes.some(r => r.id === order.id)) {
+            showAlert("This order is already selected!", "warning");
+            return;
+        }
+
+        let fromLocation = currentRoutes.length === 0 ? companyLocation : currentRoutes[currentRoutes.length - 1].deliveredAddress;
+        let toLocation = order.deliveredAddress;
+
+        updateRoute(fromLocation, toLocation);
+        updateTable(fromLocation, order, currentRoutes.length + 1);
+        currentRoutes.push(order);
+
+        // Update UI
+        document.getElementById('route-empty-state').style.display = 'none';
+        document.getElementById('route-table-container').style.display = 'block';
+        document.getElementById('route-summary').style.display = 'block';
+        document.getElementById('total-orders').textContent = currentRoutes.length;
+        document.getElementById('clearRouteBtn').disabled = false;
+
+        // Enable confirm button if we have both routes and a deliverer
+        document.getElementById('confirmRouteBtn').disabled = !selectedDelivererId;
+
+        // Update map markers to show selected orders in green
+        refreshMapMarkers();
+    }
+
+    function refreshMapMarkers() {
+        // Clear all markers
+        map.geoObjects.removeAll();
+
+        // Re-add company marker
+        displayCompany();
+
+        // Re-add order markers with updated colors
+        orders.forEach(order => {
+            const address = order.deliveredAddress;
+
+            if (!address || !address.latitude || !address.longitude) {
+                return;
+            }
+
+            const isSelected = currentRoutes.some(r => r.id === order.id);
+
+            let orderPlacemark = new ymaps.Placemark(
+                [address.latitude, address.longitude],
+                {
+                    balloonContent: `
+                            <div style="padding: 10px;">
+                                <h5>Order #${order.id}</h5>
+                                <p><b>Customer:</b> ${order.user.username}</p>
+                                <p><b>Address:</b> ${address.fullAddress}</p>
+                                <p><b>Phone:</b> ${order.phoneNumber || 'N/A'}</p>
+                                ${order.notes ? `<p><b>Notes:</b> ${order.notes}</p>` : ''}
+                                <p><b>Status:</b> ${order.status}</p>
+                                ${isSelected ? '<p class="text-success"><b>✓ Selected for delivery</b></p>' : ''}
+                            </div>
+                        `
+                },
+                { preset: isSelected ? 'islands#greenDotIcon' : 'islands#blueDotIcon' }
+            );
+
+            orderPlacemark.events.add('click', function () {
+                if (!isSelected) {
+                    handleOrderSelection(order);
+                }
+            });
+
+            map.geoObjects.add(orderPlacemark);
+        });
+
+        // Re-add route polylines
+        routePolylines.forEach(polyline => {
+            map.geoObjects.add(polyline);
+        });
+    }
+
+    function updateRoute(from, to) {
+        let newPolyline = new ymaps.Polyline(
+            [[from.latitude, from.longitude], [to.latitude, to.longitude]],
+            {},
+            {
+                strokeColor: "#1ecb63",
+                strokeWidth: 4
+            }
+        );
+
+        routePolylines.push(newPolyline);
+        map.geoObjects.add(newPolyline);
+    }
+
+    function updateTable(from, toOrder, stepNumber) {
+        const fromText = from === companyLocation ? "Company" : `${toOrder.user.username} (${from.fullAddress})`;
+        const toText = `${toOrder.user.username} (${toOrder.deliveredAddress.fullAddress})`;
+
+        const row = document.createElement('tr');
+        row.dataset.orderId = toOrder.id;
+        row.innerHTML = `
+                <td>${stepNumber}</td>
+                <td>${fromText}</td>
+                <td>${toText}</td>
+                <td>
+                    <button class="btn btn-sm btn-danger" onclick="removeOrderFromRoute(${toOrder.id})">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </td>
+            `;
+
+        routeTableBody.appendChild(row);
+    }
+
+    function removeOrderFromRoute(orderId) {
+        // Find the index of the order in currentRoutes
+        const index = currentRoutes.findIndex(order => order.id === orderId);
+
+        if (index === -1) return;
+
+        // If it's not the last order, we need to redraw the route
+        if (index < currentRoutes.length - 1) {
+            // Remove all routes
+            clearRoutes();
+
+            // Remove the order from the array
+            currentRoutes.splice(index, 1);
+
+            // Rebuild the route with remaining orders
+            if (currentRoutes.length > 0) {
+                let prevLocation = companyLocation;
+
+                currentRoutes.forEach((order, idx) => {
+                    updateRoute(prevLocation, order.deliveredAddress);
+                    updateTable(prevLocation, order, idx + 1);
+                    prevLocation = order.deliveredAddress;
+                });
+
+                // Update UI
+                document.getElementById('route-empty-state').style.display = 'none';
+                document.getElementById('route-table-container').style.display = 'block';
+                document.getElementById('route-summary').style.display = 'block';
+                document.getElementById('total-orders').textContent = currentRoutes.length;
+                document.getElementById('clearRouteBtn').disabled = false;
+            }
+        } else {
+            // It's the last order, just remove it
+            currentRoutes.pop();
+
+            // Remove the last polyline
+            const lastPolyline = routePolylines.pop();
+            map.geoObjects.remove(lastPolyline);
+
+            // Remove the row from the table
+            const rows = routeTableBody.querySelectorAll('tr');
+            routeTableBody.removeChild(rows[rows.length - 1]);
+
+            // Update UI
+            document.getElementById('total-orders').textContent = currentRoutes.length;
+
+            if (currentRoutes.length === 0) {
+                document.getElementById('route-empty-state').style.display = 'block';
+                document.getElementById('route-table-container').style.display = 'none';
+                document.getElementById('route-summary').style.display = 'none';
+                document.getElementById('clearRouteBtn').disabled = true;
+            }
+        }
+
+        // Disable confirm button if no routes
+        document.getElementById('confirmRouteBtn').disabled = currentRoutes.length === 0 || !selectedDelivererId;
+
+        // Update map markers
+        refreshMapMarkers();
+    }
+
+    function clearRoutes() {
+        routePolylines.forEach(polyline => map.geoObjects.remove(polyline));
+        routePolylines = [];
+
+        routeTableBody.innerHTML = "";
+        currentRoutes = [];
+
+        // Update UI
+        document.getElementById('route-empty-state').style.display = 'block';
+        document.getElementById('route-table-container').style.display = 'none';
+        document.getElementById('route-summary').style.display = 'none';
+        document.getElementById('total-orders').textContent = '0';
+        document.getElementById('clearRouteBtn').disabled = true;
+        document.getElementById('confirmRouteBtn').disabled = true;
+
+        // Update map markers
+        refreshMapMarkers();
+    }
+
+    async function confirmRoute() {
+        if (currentRoutes.length === 0) {
+            showAlert("No routes selected!", "warning");
+            return;
+        }
+
+        if (!selectedDelivererId) {
+            showAlert("Please select a deliverer!", "warning");
+            return;
+        }
+
+        // Use order IDs instead of user IDs
+        const orderIds = currentRoutes.map(order => order.id);
+
+        try {
+            // Show loading state
+            const confirmBtn = document.getElementById('confirmRouteBtn');
+            const originalText = confirmBtn.innerHTML;
+            confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+            confirmBtn.disabled = true;
+
+            const response = await request.post('/route/save', {
+                deliveryId: selectedDelivererId,
+                orderIds: orderIds  // Using order IDs
+            });
+
+            if (response.status === 200 || response.status === 201) {
+                showAlert("Route confirmed successfully!", "success");
+                setTimeout(() => {
+                    location.reload();
+                }, 1500);
+            } else {
+                showAlert("Error saving route!", "danger");
+                confirmBtn.innerHTML = originalText;
+                confirmBtn.disabled = false;
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            showAlert("Failed to save route.", "danger");
+
+            // Reset button state
+            const confirmBtn = document.getElementById('confirmRouteBtn');
+            confirmBtn.innerHTML = '<i class="fas fa-check me-2"></i>Confirm Route';
+            confirmBtn.disabled = false;
+        }
+    }
+
+    function showAlert(message, type) {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-5`;
+        alertDiv.style.zIndex = "9999";
+        alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+        document.body.appendChild(alertDiv);
+
+        // Auto dismiss after 3 seconds
+        setTimeout(() => {
+            alertDiv.classList.remove('show');
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 300);
+        }, 3000);
+    }
+</script>
+</body>
+</html>

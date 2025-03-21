@@ -7,23 +7,27 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
     <style>
         body {
             background-color: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            padding-top: 70px;
         }
         .orders-container {
             max-width: 900px;
             margin: 50px auto;
             background: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px;
         }
         .table-wrapper {
-            max-height: 400px;
-            overflow-y: auto;
-            margin-top: 20px;
+            overflow-x: auto;
         }
         .order-items {
             display: none;
@@ -33,9 +37,6 @@
             margin-top: 20px;
             color: #6c757d;
         }
-        .back-button {
-            margin-top: 20px;
-        }
         .product-image {
             width: 50px;
             height: 50px;
@@ -43,221 +44,122 @@
             border-radius: 5px;
             margin-right: 10px;
         }
-        body {
+        .table th {
+            background-color: #28a745;
+            color: white;
+            text-align: center;
+        }
+        .table tbody tr:hover {
+            background-color: #f1f1f1;
+            cursor: pointer;
+        }
+        .order-details {
             background-color: #f8f9fa;
-        }
-        .cart-container {
-            max-width: 900px;
-            margin: 50px auto;
-            padding: 20px;
-        }
-        .cart-item {
-            display: flex;
-            align-items: center;
-            position: relative;
-            border: 1px solid #28a745;
-            border-radius: 10px;
+            border-radius: 8px;
             padding: 15px;
             margin-bottom: 15px;
         }
-        .cart-item img {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 8px;
-        }
-        .cart-item .details {
-            flex: 1;
-            padding-left: 15px;
-        }
-        .quantity-controls {
-            display: flex;
-            align-items: center;
+        .order-details-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
             gap: 10px;
         }
-        .quantity-controls button {
-            border: 1px solid #28a745;
-            background: white;
-            color: #28a745;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
+        .detail-item {
             display: flex;
-            align-items: center;
+            margin-bottom: 8px;
+        }
+        .detail-label {
+            font-weight: bold;
+            min-width: 120px;
+            color: #28a745;
+        }
+        .detail-value {
+            flex-grow: 1;
+        }
+        .pagination-container {
+            display: flex;
             justify-content: center;
-            font-size: 18px;
-            cursor: pointer;
+            margin-top: 20px;
         }
-        .delete-icon {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            color: #dc3545;
-            font-size: 18px;
-            cursor: pointer;
+        .page-item.active .page-link {
+            background-color: #28a745;
+            border-color: #28a745;
         }
-        .checkout-container {
-            padding-top: 20px;
+        .page-link {
+            color: #28a745;
         }
-        #showtotalcost {
-            text-align: left;
+        .search-container {
             margin-bottom: 20px;
         }
-        .buttons-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 30px;
-        }
-        .checkout-button {
-            background-color: whitesmoke;
-            border: 2px solid #28a745;
-            color: black;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-size: 18px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .checkout-button:hover {
-            background-color: #28a745;
-            color: white;
-        }
-        .clear-cart-button {
-            background: white;
-            border: 2px solid red;
-            color: black;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .clear-cart-button:hover {
-            background-color: red;
-            color: white;
-        }
-        .empty-cart {
-            text-align: center;
-            margin-top: 150px;
-            color: #28a745;
-        }
-        .empty-cart img {
-            width: 100px;
-            margin-bottom: 10px;
-        }
-        .go-to-store-button {
-            background-color: #ff5733;
-            color: white;
-        }
-        .centered {
-            display: block;
-            margin: 20px auto 0;
-        }
-        .hidden {
-            display: none;
-        }
-
         .navbar .navbar-brand.active {
             font-weight: bolder;
             text-decoration: underline;
-            color: #28a745 !important; /* Yashil rang */
+            color: #28a745 !important;
         }
-
         .cart-icons a {
-            font-size: 14px; /* Kichikroq shrift */
-            color: #6c757d; /* Bootstrap-ning default kulrangi */
-            text-decoration: none; /* Underline olib tashlash */
+            font-size: 14px;
+            color: #6c757d;
+            text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 5px; /* Icon va matn orasidagi masofa */
-            padding: 5px 8px; /* Ichki oraliq */
+            gap: 5px;
+            padding: 5px 8px;
         }
-
         .profile {
-            font-size: 19px; /* Kichikroq shrift */
-            color: #6c757d; /* Bootstrap-ning default kulrangi */
-            text-decoration: none; /* Underline olib tashlash */
+            font-size: 19px;
+            color: #6c757d;
+            text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 5px; /* Icon va matn orasidagi masofa */
-            padding: 5px 8px; /* Ichki oraliq */
-            transition: color 0.3s, background 0.3s; /* Yoqimli animatsiya */
+            gap: 5px;
+            padding: 5px 8px;
+            transition: color 0.3s, background 0.3s;
         }
-
         .profile:hover,
         .profile.active {
-            color: #fff !important; /* Oq rangga o‘tadi */
-            background-color: #6c757d !important; /* Yashil fon */
-
+            color: #fff !important;
+            background-color: #6c757d !important;
         }
-
         .cart-icons a:hover {
-            color: #198754; /* Yashil rangga o‘tadi */
+            color: #198754;
         }
-
         .cart-icons i {
-            font-size: 16px; /* Iconlar biroz kichik */
+            font-size: 16px;
         }
-
-        .cart-badge {
-            font-size: 12px; /* Savat belgisi soni kichikroq bo‘lsin */
-            background: red;
-            color: white;
-            border-radius: 50%;
-            padding: 2px 5px;
-            margin-left: 3px;
-        }
-
-        body {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            margin: 0;
-            padding-top: 70px;
-        }
-
         .footer {
             background-color: #12151c;
             color: white;
             padding: 40px 20px;
             margin-top: auto;
         }
-
         .containerjon {
             display: flex;
             justify-content: space-between;
             max-width: 1200px;
             margin: auto;
         }
-
         .footer-section {
             width: 30%;
         }
-
         .underline {
             width: 50px;
             height: 3px;
             background-color: #4caf50;
             margin-bottom: 10px;
         }
-
         .social-icons a {
+            font-size: 28px;
             color: #aaa;
-            font-size: 20px;
-            margin-right: 10px;
             transition: 0.3s;
+            margin: 27px;
         }
-
         .social-icons a:hover {
             color: white;
         }
-
         ul {
             list-style: none;
             padding: 0;
         }
-
         ul li a {
             color: #aaa;
             text-decoration: none;
@@ -265,11 +167,9 @@
             margin-bottom: 8px;
             transition: 0.3s;
         }
-
         ul li a:hover {
             color: white;
         }
-
         .email-input {
             width: 100%;
             padding: 12px;
@@ -282,12 +182,10 @@
             outline: none;
             transition: 0.3s;
         }
-
         .email-input:focus {
             border-color: #43a047;
             box-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
         }
-
         .subscribe-btn {
             width: 100%;
             padding: 12px;
@@ -300,65 +198,23 @@
             border: none;
             font-weight: bold;
         }
-
         .subscribe-btn:hover {
             background-color: #43a047;
             box-shadow: 0 4px 10px rgba(76, 175, 80, 0.4);
             transform: translateY(-2px);
         }
-
-        .social-icons a {
-            font-size: 28px; /* Ikonkalarni kattalashtirish */
-            color: #aaa;
-            transition: 0.3s;
-            margin: 27px;
-        }
-
-        .social-icons a:hover {
-            color: white; /* Hover effekti */
-        }
-        .orders-container {
-            max-width: 900px;
-            margin: 50px auto;
-            background: #ffffff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            font-weight: 600;
-        }
-        .table-wrapper {
-            overflow-x: auto;
-        }
-        .table th {
-            background-color: green;
-            color: white;
-            text-align: center;
-        }
-        .table tbody tr:hover {
-            background-color: grey;
-            cursor: pointer;
-        }
-        .btn-view {
-            background-color: #28a745;
-            color: white;
-            border: none;
-            padding: 5px 12px;
-            border-radius: 5px;
-            transition: 0.3s;
-        }
-        .btn-view:hover {
-            background-color: #218838;
+        .notes-box {
+            background-color: #f0f8ff;
+            border-left: 3px solid #28a745;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 0 5px 5px 0;
         }
     </style>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
 <body>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-
-<header class="navbar navbar-expand-lg p-3" style=" position: fixed; top: 0;  left: 0;  width: 100%;  background-color: white;
-                color: white;  padding: 5px 8px;  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);  z-index: 1000;">
+<header class="navbar navbar-expand-lg p-3" style="position: fixed; top: 0; left: 0; width: 100%; background-color: white;
+                color: white; padding: 5px 8px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); z-index: 1000;">
 
     <div class="d-flex align-items-center me-2">
         <img src="images/logo/img.png" alt="not found !" style="width: 110px; margin-left: 10px; margin-right: 95px;">
@@ -366,7 +222,7 @@
            style="text-decoration: none; cursor: default; font-size: 24px;"></a>
     </div>
 
-    <div class="d-flex align-items-center me-auto me-4"> <!-- ms-4 bilan chapga yaqinlashtiramiz -->
+    <div class="d-flex align-items-center me-auto me-4">
         <a class="navbar-brand " style="color: #6c757d; font-weight: bolder; font-size: 17px" href="store.html">ASOSIY</a>
         <a class="navbar-brand " style="color: #6c757d; font-weight: bolder; font-size: 17px" href="contact.html">KONTAKT</a>
         <a class="navbar-brand " style="color: #6c757d; font-weight: bolder; font-size: 17px" href="about.html">BIZ HAQIMIZDA</a>
@@ -375,12 +231,10 @@
     </div>
 
     <div class="d-flex align-items-center">
-
         <div class="d-flex align-items-center">
             <div class="cart-icons d-flex align-items-center">
-                  <a href="orders.html"><i class="bi bi-box-seam"></i><span style="color: green">Buyurtmalar</span></a>
+                <a href="orders.html"><i class="bi bi-box-seam"></i><span style="color: green">Buyurtmalar</span></a>
             </div>
-
 
             <!-- User Profile Dropdown -->
             <div class="dropdown ms-3" id="userProfile" style="display: none;">
@@ -401,33 +255,62 @@
 
             <button id="authButton" class="btn btn-outline-success ms-3"></button>
         </div>
-        </div>
+    </div>
 </header>
+
 <div class="container orders-container">
-    <h1 class="text-center" STYLE="color: #28a745">BUYURTMALARIM</h1>
+    <h1 class="text-center" style="color: #28a745">BUYURTMALARIM</h1>
     <p class="text-muted text-center">Buyurtma tafsilotlarini ko'rish uchun ustiga bosing.</p>
 
-    <div class="table-wrapper " style="color: #28a745">
-        <table class="table table-hover text-center" style="color: #28a745">
+    <!-- Search Container -->
+    <div class="search-container">
+        <div class="input-group">
+            <input type="text" id="searchInput" class="form-control" placeholder="Buyurtma raqami, manzil yoki telefon raqami bo'yicha qidirish...">
+            <button class="btn btn-outline-success" type="button" id="searchButton">
+                <i class="bi bi-search"></i> Qidirish
+            </button>
+        </div>
+    </div>
+
+    <div class="table-wrapper">
+        <table class="table table-hover text-center">
             <thead>
             <tr>
                 <th>#</th>
                 <th>Buyurtma sanasi</th>
+                <th>Manzil</th>
+                <th>Telefon</th>
                 <th>Holati</th>
             </tr>
             </thead>
-            <tbody id="ordersTableBody" style="color: #ece1be">
+            <tbody id="ordersTableBody">
+            <!-- Orders will be loaded here -->
             </tbody>
         </table>
     </div>
+
+    <!-- No Orders Message -->
+    <div id="noOrdersMessage" class="no-orders" style="display: none;">
+        <i class="bi bi-inbox-fill fs-1 text-muted"></i>
+        <p class="mt-3">Hozircha buyurtmalar yo'q</p>
+        <a href="store.html" class="btn btn-success mt-2">Do'konga o'tish</a>
+    </div>
+
+    <!-- Pagination -->
+    <nav aria-label="Orders pagination">
+        <ul class="pagination justify-content-center" id="pagination">
+            <!-- Pagination will be generated here -->
+        </ul>
+    </nav>
 </div>
+
 <footer class="footer">
     <div class="containerjon">
         <div class="footer-section">
             <h2>Bizning kompaniya</h2>
             <div class="underline"></div>
-            <p>Ajoyib mahsulotlar va xizmatlar uchun yagona manzil. Biz bilan bog‘laning va so‘nggi takliflarimiz hamda
-                maxsus chegirmalarimizdan xabardor bo‘ling.</p>
+            <p>Ajoyib mahsulotlar va xizmatlar uchun yagona manzil. Biz bilan bog'laning va so'nggi takliflarimiz hamda
+                maxsus chegirmalarimizdan xabardor bo'ling.</p>
             <div class="social-icons">
                 <a href="#"><i class="fab fa-facebook"></i></a>
                 <a href="#"><i class="fab fa-twitter"></i></a>
@@ -461,49 +344,148 @@
 <script src="js/modal.js"></script>
 <script src="js/request.js"></script>
 <script>
+    // Global variables
+    let allOrders = [];
+    let filteredOrders = [];
+    const ORDERS_PER_PAGE = 5;
+    let currentPage = 1;
+
+    // Fetch all orders from the API
     function fetchOrders() {
-        let token=localStorage.getItem("token");
+        let token = localStorage.getItem("token");
         if (token) {
             request({
-                url:`/order/all`,
+                url: `/order/all`,
                 method: "GET"
             })
                 .then(response => {
-                    const orders = response.data;
-                    renderOrders(orders);
+                    allOrders = response.data;
+                    filteredOrders = [...allOrders];
+
+                    if (allOrders.length === 0) {
+                        document.getElementById("noOrdersMessage").style.display = "block";
+                        document.querySelector(".table-wrapper").style.display = "none";
+                        document.getElementById("pagination").style.display = "none";
+                    } else {
+                        document.getElementById("noOrdersMessage").style.display = "none";
+                        document.querySelector(".table-wrapper").style.display = "block";
+                        renderPagination();
+                        renderOrdersPage(1);
+                    }
                 })
-        }
-        else {
+                .catch(error => {
+                    console.error("Error fetching orders:", error);
+                    document.getElementById("noOrdersMessage").style.display = "block";
+                    document.querySelector(".table-wrapper").style.display = "none";
+                });
+        } else {
             alert("Please login and order items first to view order items!");
             window.location.href = "store.html";
         }
     }
 
-    function renderOrders(orders) {
+    // Render orders for the current page
+    function renderOrdersPage(page) {
+        currentPage = page;
+        const startIndex = (page - 1) * ORDERS_PER_PAGE;
+        const endIndex = startIndex + ORDERS_PER_PAGE;
+        const ordersToDisplay = filteredOrders.slice(startIndex, endIndex);
+
+        renderOrders(ordersToDisplay, startIndex);
+        updatePaginationActive();
+    }
+
+    // Render the orders table
+    function renderOrders(orders, startIndex = 0) {
         let orderHtml = "";
+
         orders.forEach((order, index) => {
+            const displayIndex = startIndex + index + 1;
+            const address = order.deliveredAddress ? order.deliveredAddress.fullAddress : "Manzil ko'rsatilmagan";
+
             orderHtml += `
                 <tr onclick="toggleOrderItems(${order.id})">
-                    <td>${index + 1}</td>
-                <td>${new Intl.DateTimeFormat('uz-UZ', {
+                    <td>${displayIndex}</td>
+                    <td>${new Intl.DateTimeFormat('uz-UZ', {
                 month: '2-digit',
                 day: '2-digit',
                 year: 'numeric'
             }).format(new Date(order.orderDate))}</td>
-                    <td><span class="badge ${order.status === 'COMPLETED' ? 'bg-success' : 'bg-warning text-dark'}">${order.status}</span></td>
+                    <td>${address}</td>
+                    <td>${order.phoneNumber || "Telefon ko'rsatilmagan"}</td>
+                    <td><span class="badge ${getStatusBadgeClass(order.status)}">${order.status}</span></td>
                 </tr>
                 <tr id="order-items-${order.id}" class="order-items">
-                    <td colspan="4">
+                    <td colspan="5">
                         <div class="p-3">
-                            <h5>Buyurtma mahsulotlari</h5>
+                            <div class="order-details mb-3">
+                                <h5 class="mb-3" style="color: #28a745">Buyurtma ma'lumotlari</h5>
+                                <div class="order-details-grid">
+                                    <div class="detail-item">
+                                        <span class="detail-label">Buyurtma ID:</span>
+                                        <span class="detail-value">#${order.id}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Sana:</span>
+                                        <span class="detail-value">${new Intl.DateTimeFormat('uz-UZ', {
+                month: '2-digit',
+                day: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            }).format(new Date(order.orderDate))}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Manzil:</span>
+                                        <span class="detail-value">${address}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Telefon:</span>
+                                        <span class="detail-value">${order.phoneNumber || "Telefon ko'rsatilmagan"}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Holati:</span>
+                                        <span class="detail-value">
+                                            <span class="badge ${getStatusBadgeClass(order.status)}">${order.status}</span>
+                                        </span>
+                                    </div>
+                                </div>
+                                ${order.notes ? `
+                                <div class="mt-3">
+                                    <span class="detail-label">Izohlar:</span>
+                                    <div class="notes-box">${order.notes}</div>
+                                </div>` : ''}
+                            </div>
+
+                            <h5 style="color: #28a745">Buyurtma mahsulotlari</h5>
                             <ul id="items-list-${order.id}" class="list-group"></ul>
                         </div>
                     </td>
                 </tr>`;
         });
+
         document.getElementById("ordersTableBody").innerHTML = orderHtml;
     }
 
+    // Get appropriate badge class based on order status
+    function getStatusBadgeClass(status) {
+        switch(status) {
+            case 'COMPLETED':
+                return 'bg-success';
+            case 'NEW':
+                return 'bg-primary';
+            case 'PROCESSING':
+                return 'bg-info text-dark';
+            case 'SHIPPED':
+                return 'bg-warning text-dark';
+            case 'CANCELLED':
+                return 'bg-danger';
+            default:
+                return 'bg-secondary';
+        }
+    }
+
+    // Toggle order items visibility
     function toggleOrderItems(orderId) {
         const orderRow = document.getElementById(`order-items-${orderId}`);
         if (orderRow.style.display === "none" || orderRow.style.display === "") {
@@ -514,39 +496,156 @@
         }
     }
 
+    // Fetch order items for a specific order
     function fetchOrderItems(orderId) {
         let token = localStorage.getItem("token");
         if (token) {
             request({
-                url:`/order/items/${orderId}`,
+                url: `/order/items/${orderId}`,
                 method: "GET"
             })
                 .then(response => {
                     const itemsList = document.getElementById(`items-list-${orderId}`);
-                    itemsList.innerHTML = response.data.map(item => `
-                <li class="list-group-item d-flex align-items-center">
-                    <img class="product-image" src="http://localhost:8080/api/file/${item.product.attachment.id}" alt="Product Image">
-                    <div>
-<div class="d-flex align-items-center">
-    <strong class="me-2">${item.product.name}</strong>
-    <i class="bi bi-arrow-right-short text-primary fs-4"></i>
-    <span class="text-success fw-bold fs-5">${item.quantity}</span> ta
-</div>
-                    </div>
-<span class="badge bg-dark ms-auto">
-    ${new Intl.NumberFormat('uz-UZ').format(item.price)} so'm
-</span>
-                </li>
-            `).join("");
+
+                    // Calculate total price
+                    let totalPrice = 0;
+                    response.data.forEach(item => {
+                        totalPrice += item.price * item.quantity;
+                    });
+
+                    let itemsHtml = response.data.map(item => `
+                    <li class="list-group-item d-flex align-items-center">
+                        <img class="product-image" src="http://localhost:8080/api/file/${item.product.attachment.id}" alt="Product Image">
+                        <div>
+                            <div class="d-flex align-items-center">
+                                <strong class="me-2">${item.product.name}</strong>
+                                <i class="bi bi-arrow-right-short text-primary fs-4"></i>
+                                <span class="text-success fw-bold fs-5">${item.quantity}</span> ta
+                            </div>
+                        </div>
+                        <span class="badge bg-dark ms-auto">
+                            ${new Intl.NumberFormat('uz-UZ').format(item.price)} so'm
+                        </span>
+                    </li>
+                `).join("");
+
+                    // Add total price row
+                    itemsHtml += `
+                    <li class="list-group-item d-flex justify-content-between align-items-center bg-light">
+                        <strong style="color: #28a745">Jami summa:</strong>
+                        <span class="badge bg-success fs-6">
+                            ${new Intl.NumberFormat('uz-UZ').format(totalPrice)} so'm
+                        </span>
+                    </li>
+                `;
+
+                    itemsList.innerHTML = itemsHtml;
                 })
                 .catch(error => console.error(`Error fetching items for order ${orderId}:`, error));
         }
-        else {
-            alert("Please login and order items first to view order items!");
-            window.location.href = "store.html";
+    }
+
+    // Render pagination controls
+    function renderPagination() {
+        const totalPages = Math.ceil(filteredOrders.length / ORDERS_PER_PAGE);
+        let paginationHtml = '';
+
+        // Previous button
+        paginationHtml += `
+            <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                <a class="page-link" href="#" onclick="renderOrdersPage(${currentPage - 1}); return false;">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+            </li>
+        `;
+
+        // Page numbers
+        for (let i = 1; i <= totalPages; i++) {
+            paginationHtml += `
+                <li class="page-item ${i === currentPage ? 'active' : ''}">
+                    <a class="page-link" href="#" onclick="renderOrdersPage(${i}); return false;">${i}</a>
+                </li>
+            `;
+        }
+
+        // Next button
+        paginationHtml += `
+            <li class="page-item ${currentPage === totalPages || totalPages === 0 ? 'disabled' : ''}">
+                <a class="page-link" href="#" onclick="renderOrdersPage(${currentPage + 1}); return false;">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>
+        `;
+
+        document.getElementById("pagination").innerHTML = paginationHtml;
+    }
+
+    // Update active pagination item
+    function updatePaginationActive() {
+        const paginationItems = document.querySelectorAll('#pagination .page-item');
+        paginationItems.forEach((item, index) => {
+            // Skip first and last items (prev/next buttons)
+            if (index === 0 || index === paginationItems.length - 1) return;
+
+            if (index === currentPage) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        });
+
+        // Update prev/next buttons
+        const totalPages = Math.ceil(filteredOrders.length / ORDERS_PER_PAGE);
+        const prevButton = document.querySelector('#pagination .page-item:first-child');
+        const nextButton = document.querySelector('#pagination .page-item:last-child');
+
+        if (currentPage === 1) {
+            prevButton.classList.add('disabled');
+        } else {
+            prevButton.classList.remove('disabled');
+        }
+
+        if (currentPage === totalPages || totalPages === 0) {
+            nextButton.classList.add('disabled');
+        } else {
+            nextButton.classList.remove('disabled');
         }
     }
 
+    // Search functionality
+    function searchOrders() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+
+        if (searchTerm === '') {
+            filteredOrders = [...allOrders];
+        } else {
+            filteredOrders = allOrders.filter(order => {
+                const address = order.deliveredAddress ? order.deliveredAddress.fullAddress.toLowerCase() : '';
+                const phone = order.phoneNumber ? order.phoneNumber.toLowerCase() : '';
+                const notes = order.notes ? order.notes.toLowerCase() : '';
+
+                return (
+                    order.id.toString().includes(searchTerm) ||
+                    address.includes(searchTerm) ||
+                    phone.includes(searchTerm) ||
+                    notes.includes(searchTerm)
+                );
+            });
+        }
+
+        if (filteredOrders.length === 0) {
+            document.getElementById("noOrdersMessage").style.display = "block";
+            document.querySelector(".table-wrapper").style.display = "none";
+        } else {
+            document.getElementById("noOrdersMessage").style.display = "none";
+            document.querySelector(".table-wrapper").style.display = "block";
+        }
+
+        renderPagination();
+        renderOrdersPage(1);
+    }
+
+    // Check user authentication
     function checkUserAuth() {
         let token = localStorage.getItem("token");
         let authButton = document.getElementById("authButton");
@@ -585,12 +684,19 @@
         }
     }
 
-    checkUserAuth();
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', function() {
+        checkUserAuth();
+        fetchOrders();
 
-
-
-    fetchOrders();
+        // Add event listeners
+        document.getElementById('searchButton').addEventListener('click', searchOrders);
+        document.getElementById('searchInput').addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                searchOrders();
+            }
+        });
+    });
 </script>
-
 </body>
 </html>

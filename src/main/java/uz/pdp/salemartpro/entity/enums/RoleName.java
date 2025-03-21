@@ -5,6 +5,6 @@ public enum RoleName {
     ROLE_DELIVERER,
     ROLE_USER,
     ROLE_ADMIN,
-    ROLE_BOSS,        // ✅ Fixed Typo
+    ROLE_BOSS,
     ROLE_SUPER_ADMIN,
 }
