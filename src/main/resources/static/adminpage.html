@@ -561,12 +561,10 @@
                             <span id="usernameDisplay">Username</span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item text-danger" href="#" id="logoutBtn"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
                         </ul>
                     </div>
-
                 </div>
             </header>
 
@@ -591,10 +589,10 @@
                 iframe.style.opacity = "1";
                 iframe.style.transform = "translateY(0)";
             }, 100);
-        }, 200);
 
-        // Save the current iframe URL to localStorage
-        localStorage.setItem("iframeUrl", page);
+            // Save the current iframe URL to localStorage
+            localStorage.setItem("iframeUrl", page);
+        }, 200);
     }
 
     // Check user authentication and display username
@@ -603,29 +601,27 @@
         const userProfile = document.getElementById("userProfile");
         const usernameDisplay = document.getElementById("usernameDisplay");
         const logoutBtn = document.getElementById("logoutBtn");
-        const logoutDropdownBtn = document.getElementById("logoutDropdownBtn");
 
         if (token) {
-            // Decode the token to get user details
-            const decodedToken = JSON.parse(atob(token.split('.')[1]));
-            const username = decodedToken.sub || "Admin";
+            try {
+                // Decode the token to get user details
+                const decodedToken = JSON.parse(atob(token.split('.')[1]));
+                const username = decodedToken.sub || "Admin";
 
-            // Display username and show profile dropdown
-            usernameDisplay.innerText = username;
-            userProfile.style.display = "block";
+                // Display username and show profile dropdown
+                usernameDisplay.innerText = username;
+                userProfile.style.display = "block";
 
-            // Logout functionality
-            logoutBtn.onclick = function () {
-                localStorage.removeItem("token");
-                localStorage.removeItem("iframeUrl"); // Clear iframe URL on logout
-                window.location.href = "login.html";
-            };
-
-            logoutDropdownBtn.onclick = function () {
-                localStorage.removeItem("token");
-                localStorage.removeItem("iframeUrl"); // Clear iframe URL on logout
-                window.location.href = "log in.html";
-            };
+                // Logout functionality
+                logoutBtn.onclick = function () {
+                    localStorage.removeItem("token");
+                    localStorage.removeItem("iframeUrl"); // Clear iframe URL on logout
+                    window.location.href = "login.html";
+                };
+            } catch (e) {
+                console.error("Error decoding token:", e);
+                userProfile.style.display = "none";
+            }
         } else {
             // Hide profile dropdown if user is not logged in
             userProfile.style.display = "none";
@@ -689,21 +685,60 @@
         });
     }
 
-    // On page load, check if there's a saved iframe URL
+    // Load saved iframe URL and restore state
+    function loadSavedIframeState() {
+        const savedIframeUrl = localStorage.getItem("iframeUrl");
+        const iframe = document.getElementById("main-iframe");
+
+        if (savedIframeUrl) {
+            // Set iframe source to saved URL
+            iframe.src = savedIframeUrl;
+
+            // Highlight the active menu item based on saved URL
+            highlightActiveMenuItem(savedIframeUrl);
+        }
+    }
+
+    // Highlight the active menu item based on current iframe URL
+    function highlightActiveMenuItem(url) {
+        // Remove active class from all menu items
+        document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+            link.classList.remove('active');
+        });
+
+        // Find and highlight the menu item that corresponds to the current URL
+        document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+            if (link.getAttribute('onclick') && link.getAttribute('onclick').includes(url)) {
+                link.classList.add('active');
+
+                // If it's in a collapsed menu, expand that menu
+                const parentUl = link.closest('ul.collapse');
+                if (parentUl) {
+                    const collapseId = parentUl.id;
+                    const toggleLink = document.querySelector(`[href="#${collapseId}"]`);
+                    if (toggleLink && !parentUl.classList.contains('show')) {
+                        // Create a new bootstrap collapse instance and show it
+                        new bootstrap.Collapse(parentUl).show();
+                    }
+                }
+            }
+        });
+    }
+
+    // On page load
     window.onload = function () {
         checkUserAuth();
         animateSidebar();
         enhanceDropdownAnimation();
 
-        const savedIframeUrl = localStorage.getItem("iframeUrl");
-        const iframe = document.getElementById("main-iframe");
+        // Load saved iframe state (this is the key fix)
+        loadSavedIframeState();
 
-        // Load the saved URL if it exists, otherwise load the default page
-        if (savedIframeUrl) {
-            iframe.src = savedIframeUrl;
-        } else {
-            iframe.src = "dashboard.html"; // Default page
-        }
+        // Add event listener to iframe to update active menu item when iframe loads
+        document.getElementById('main-iframe').addEventListener('load', function() {
+            const currentSrc = this.src.split('/').pop(); // Get just the filename
+            highlightActiveMenuItem(currentSrc);
+        });
     };
 </script>
 

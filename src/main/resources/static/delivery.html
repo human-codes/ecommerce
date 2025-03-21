@@ -647,6 +647,53 @@
                 width: 0;
             }
         }
+
+        /* Pagination styling */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .pagination .page-item .page-link {
+            color: var(--dark-color);
+            border-radius: 8px;
+            margin: 0 3px;
+            border: 1px solid #ddd;
+            transition: all var(--transition-speed);
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        .pagination .page-item .page-link:hover {
+            background-color: var(--light-color);
+            border-color: var(--primary-color);
+            color: var(--dark-color);
+        }
+
+        .pagination .page-item.disabled .page-link {
+            color: #aaa;
+            pointer-events: none;
+        }
+
+        .pagination-info {
+            text-align: center;
+            margin-top: 10px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* Password error message */
+        .password-error {
+            color: #e57373;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -699,6 +746,9 @@
                         <i class="bi bi-search"></i>
                     </span>
                     <input type="text" id="searchInput" class="form-control" placeholder="Search users...">
+                    <button class="btn btn-primary" type="button" id="searchButton">
+                        <i class="bi bi-search me-1"></i> Search
+                    </button>
                 </div>
             </div>
 
@@ -720,6 +770,18 @@
                     <!-- User data will be loaded here -->
                     </tbody>
                 </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination-container">
+                <div class="pagination-info" id="paginationInfo">
+                    Showing <span id="startItem">0</span> to <span id="endItem">0</span> of <span id="totalItems">0</span> deliveries
+                </div>
+                <nav aria-label="Page navigation">
+                    <ul class="pagination" id="pagination">
+                        <!-- Pagination will be generated here -->
+                    </ul>
+                </nav>
             </div>
         </div>
     </div>
@@ -770,6 +832,7 @@
                                 <input type="password" class="form-control with-icon" id="confirmPassword" name="confirmPassword" required>
                                 <i class="bi bi-lock-fill input-icon"></i>
                                 <i class="bi bi-eye password-toggle" id="toggleConfirmPassword"></i>
+                                <div class="password-error" id="passwordError">Passwords do not match</div>
                             </div>
                         </div>
                     </div>
@@ -869,23 +932,22 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="deleteUserModalLabel"><i class="bi bi-exclamation-triangle me-2 text-danger"></i>Confirm Delete</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>  class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-            <p>Are you sure you want to delete the user <strong id="deleteUserName"></strong>?</p>
-            <p class="text-danger">This action cannot be undone.</p>
-            <input type="hidden" id="deleteUserId">
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                <i class="bi bi-x me-2"></i>Cancel
-            </button>
-            <button type="button" class="btn btn-danger" id="confirmDeleteBtn" onclick="deleteUser()">
-                <i class="bi bi-trash me-2"></i>Delete User
-            </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the user <strong id="deleteUserName"></strong>?</p>
+                <p class="text-danger">This action cannot be undone.</p>
+                <input type="hidden" id="deleteUserId">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x me-2"></i>Cancel
+                </button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn" onclick="deleteUser()">
+                    <i class="bi bi-trash me-2"></i>Delete User
+                </button>
+            </div>
         </div>
     </div>
-</div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
@@ -897,6 +959,10 @@
 <script>
     let usersTable = document.getElementById('usersTable');
     let users = [];
+    let currentPage = 1;
+    let itemsPerPage = 10;
+    let filteredUsers = [];
+    let searchTerm = '';
 
     // Initialize Select2 for role dropdowns
     $(document).ready(function() {
@@ -919,7 +985,40 @@
 
         // Initialize truck animation
         animateTruck();
+
+        // Add event listener for search button
+        document.getElementById('searchButton').addEventListener('click', function() {
+            searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            currentPage = 1; // Reset to first page on new search
+            filterUsers(searchTerm);
+        });
+
+        // Add event listener for search input (search as you type)
+        document.getElementById('searchInput').addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                searchTerm = this.value.toLowerCase();
+                currentPage = 1; // Reset to first page on new search
+                filterUsers(searchTerm);
+            }
+        });
+
+        // Add event listeners for password validation
+        document.getElementById('password').addEventListener('input', validatePasswords);
+        document.getElementById('confirmPassword').addEventListener('input', validatePasswords);
     });
+
+    // Validate passwords match
+    function validatePasswords() {
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        const passwordError = document.getElementById('passwordError');
+
+        if (confirmPassword && password !== confirmPassword) {
+            passwordError.style.display = 'block';
+        } else {
+            passwordError.style.display = 'none';
+        }
+    }
 
     // Load users from the backend
     function loadUser() {
@@ -935,9 +1034,11 @@
             .then((res) => {
                 // Store the users data
                 users = res.data;
+                filteredUsers = [...users]; // Initialize filtered users with all users
 
-                // Draw the users in the table
-                draw();
+                // Apply pagination and draw the table
+                updatePagination();
+                drawPaginatedUsers();
             })
             .catch((error) => {
                 console.error('Error loading users:', error);
@@ -950,23 +1051,30 @@
             });
     }
 
-    // Draw users in the table
-    function draw() {
+    // Draw paginated users in the table
+    function drawPaginatedUsers() {
         const tbody = usersTable.querySelector('tbody');
 
         // Clear the table
         tbody.innerHTML = '';
 
-        // Check if users array is empty
-        if (users.length === 0) {
+        // Check if filtered users array is empty
+        if (filteredUsers.length === 0) {
             tbody.innerHTML = '<tr><td colspan="7" class="text-center">No users found</td></tr>';
+            updatePaginationInfo(0, 0, 0);
             return;
         }
 
-        // Add each user to the table
-        users.forEach(user => {
-            const tr = document.createElement('tr');
+        // Calculate start and end index for current page
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = Math.min(startIndex + itemsPerPage, filteredUsers.length);
 
+        // Get current page data
+        const currentPageData = filteredUsers.slice(startIndex, endIndex);
+
+        // Add each user to the table
+        currentPageData.forEach(user => {
+            const tr = document.createElement('tr');
 
             let rolesHtml = 'No roles';
             if (user.roles && Array.isArray(user.roles) && user.roles.length > 0) {
@@ -990,83 +1098,142 @@
                     </td>
                 `;
 
-
             tbody.appendChild(tr);
         });
+
+        // Update pagination info
+        updatePaginationInfo(startIndex + 1, endIndex, filteredUsers.length);
+    }
+
+    // Update pagination information text
+    function updatePaginationInfo(start, end, total) {
+        document.getElementById('startItem').textContent = start;
+        document.getElementById('endItem').textContent = end;
+        document.getElementById('totalItems').textContent = total;
+    }
+
+    // Generate pagination controls
+    function updatePagination() {
+        const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+        const paginationElement = document.getElementById('pagination');
+
+        // Clear pagination
+        paginationElement.innerHTML = '';
+
+        // Previous button
+        const prevLi = document.createElement('li');
+        prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+        prevLi.innerHTML = `
+            <a class="page-link" href="#" aria-label="Previous" ${currentPage > 1 ? `onclick="changePage(${currentPage - 1}); return false;"` : ''}>
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        `;
+        paginationElement.appendChild(prevLi);
+
+        // Page numbers
+        const maxVisiblePages = 5;
+        let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+        let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+        if (endPage - startPage + 1 < maxVisiblePages) {
+            startPage = Math.max(1, endPage - maxVisiblePages + 1);
+        }
+
+        // First page
+        if (startPage > 1) {
+            const firstLi = document.createElement('li');
+            firstLi.className = 'page-item';
+            firstLi.innerHTML = `
+                <a class="page-link" href="#" onclick="changePage(1); return false;">1</a>
+            `;
+            paginationElement.appendChild(firstLi);
+
+            // Ellipsis after first page if needed
+            if (startPage > 2) {
+                const ellipsisLi = document.createElement('li');
+                ellipsisLi.className = 'page-item disabled';
+                ellipsisLi.innerHTML = `
+                    <a class="page-link" href="#">...</a>
+                `;
+                paginationElement.appendChild(ellipsisLi);
+            }
+        }
+
+        // Page numbers
+        for (let i = startPage; i <= endPage; i++) {
+            const pageLi = document.createElement('li');
+            pageLi.className = `page-item ${i === currentPage ? 'active' : ''}`;
+            pageLi.innerHTML = `
+                <a class="page-link" href="#" onclick="changePage(${i}); return false;">${i}</a>
+            `;
+            paginationElement.appendChild(pageLi);
+        }
+
+        // Last page
+        if (endPage < totalPages) {
+            // Ellipsis before last page if needed
+            if (endPage < totalPages - 1) {
+                const ellipsisLi = document.createElement('li');
+                ellipsisLi.className = 'page-item disabled';
+                ellipsisLi.innerHTML = `
+                    <a class="page-link" href="#">...</a>
+                `;
+                paginationElement.appendChild(ellipsisLi);
+            }
+
+            const lastLi = document.createElement('li');
+            lastLi.className = 'page-item';
+            lastLi.innerHTML = `
+                <a class="page-link" href="#" onclick="changePage(${totalPages}); return false;">${totalPages}</a>
+            `;
+            paginationElement.appendChild(lastLi);
+        }
+
+        // Next button
+        const nextLi = document.createElement('li');
+        nextLi.className = `page-item ${currentPage === totalPages || totalPages === 0 ? 'disabled' : ''}`;
+        nextLi.innerHTML = `
+            <a class="page-link" href="#" aria-label="Next" ${currentPage < totalPages ? `onclick="changePage(${currentPage + 1}); return false;"` : ''}>
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        `;
+        paginationElement.appendChild(nextLi);
+    }
+
+    // Change page
+    function changePage(page) {
+        currentPage = page;
+        drawPaginatedUsers();
+        updatePagination();
+
+        // Scroll to top of table
+        usersTable.scrollIntoView({ behavior: 'smooth' });
     }
 
     // Search functionality
-    document.getElementById('searchInput').addEventListener('keyup', function() {
-        const searchTerm = this.value.toLowerCase();
-        filterUsers(searchTerm);
-    });
-
     function filterUsers(searchTerm) {
         if (!searchTerm) {
             // If search is empty, show all users
-            draw();
-            return;
+            filteredUsers = [...users];
+        } else {
+            // Filter the users array based on search term
+            filteredUsers = users.filter(user => {
+                return (
+                    (user.username && user.username.toLowerCase().includes(searchTerm)) ||
+                    (user.email && user.email.toLowerCase().includes(searchTerm)) ||
+                    (user.phone && user.phone.toLowerCase().includes(searchTerm)) ||
+                    (user.vehicleNumber && user.vehicleNumber.toLowerCase().includes(searchTerm))
+                );
+            });
         }
 
-        // Filter the users array based on search term
-        const filteredUsers = users.filter(user => {
-            return (
-                (user.username && user.username.toLowerCase().includes(searchTerm)) ||
-                (user.email && user.email.toLowerCase().includes(searchTerm)) ||
-                (user.phone && user.phone.toLowerCase().includes(searchTerm)) ||
-                (user.vehicleNumber && user.vehicleNumber.toLowerCase().includes(searchTerm))
-            );
-        });
-
-        // Draw the filtered users
-        drawFilteredUsers(filteredUsers);
+        // Reset to first page and update display
+        currentPage = 1;
+        updatePagination();
+        drawPaginatedUsers();
     }
-
-    function drawFilteredUsers(filteredUsers) {
-        const tbody = usersTable.querySelector('tbody');
-
-        // Clear the table
-        tbody.innerHTML = '';
-
-        // Check if filtered array is empty
-        if (filteredUsers.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" class="text-center">No matching users found</td></tr>';
-            return;
-        }
-
-        // Add each filtered user to the table
-        filteredUsers.forEach(user => {
-            const tr = document.createElement('tr');
-
-            let rolesHtml = 'No roles';
-            if (user.roles && Array.isArray(user.roles) && user.roles.length > 0) {
-                rolesHtml = user.roles.map(role =>
-                    `<span class="badge-role">${role.roleName || role.name || 'Unknown'}</span>`
-                ).join(' ');
-            }
-
-            // Create table cells for user data
-            tr.innerHTML = `
-                <td>${user.id}</td>
-                <td>${user.username}</td>
-                <td>${user.email}</td>
-                <td>${user.phone || '-'}</td>
-                <td>${user.vehicleNumber || '-'}</td>
-                <td>${rolesHtml}</td>
-                <td>
-                    <button class="action-btn action-btn-edit" onclick="openEditUserModal(${user.id})">
-                        <i class="bi bi-pencil"></i>
-                    </button>
-                </td>
-            `;
-
-            tbody.appendChild(tr);
-        });
-    }
-
 
     function openEditUserModal(userId) {
-
         const user = users.find(u => u.id === userId);
 
         if (!user) {
@@ -1074,14 +1241,9 @@
             return;
         }
 
-
         document.getElementById('editUserId').value = user.id;
-
-
         document.getElementById('displayUsername').textContent = user.username;
         document.getElementById('displayEmail').textContent = user.email;
-
-
         document.getElementById('editUsername').value = user.username;
         document.getElementById('editEmail').value = user.email;
         document.getElementById('editPhone').value = user.phone || '';
@@ -1105,11 +1267,9 @@
             return;
         }
 
-
         const updateBtn = document.getElementById('updateBtn');
         updateBtn.innerHTML = '<span class="loading-spinner"></span> Updating...';
         updateBtn.classList.add('btn-loading');
-
 
         const userData = {
             username: username,
@@ -1131,8 +1291,18 @@
                     users[userIndex].email = email;
                     users[userIndex].phone = phone;
                     users[userIndex].vehicleNumber = vehicleNumber;
+
+                    // Update filtered users as well
+                    const filteredIndex = filteredUsers.findIndex(u => u.id === parseInt(userId));
+                    if (filteredIndex !== -1) {
+                        filteredUsers[filteredIndex].username = username;
+                        filteredUsers[filteredIndex].email = email;
+                        filteredUsers[filteredIndex].phone = phone;
+                        filteredUsers[filteredIndex].vehicleNumber = vehicleNumber;
+                    }
+
                     // Redraw the table with updated data
-                    draw();
+                    drawPaginatedUsers();
                 }
 
                 // Close the modal
@@ -1160,6 +1330,7 @@
         const confirmPassword = document.getElementById('confirmPassword').value;
         const phone = document.getElementById('phone').value.trim();
         const vehicleNumber = document.getElementById('vehicleNumber').value.trim();
+        const passwordError = document.getElementById('passwordError');
 
         if (!username || !email || !password || !phone) {
             showAlert('error', 'Please fill all required fields');
@@ -1167,14 +1338,13 @@
         }
 
         if (password !== confirmPassword) {
-            showAlert('error', 'Passwords do not match');
+            passwordError.style.display = 'block';
             return;
         }
 
         const submitBtn = document.getElementById('submitBtn');
         submitBtn.innerHTML = '<span class="loading-spinner"></span> Creating...';
         submitBtn.classList.add('btn-loading');
-
 
         const userData = {
             username: username,
@@ -1191,25 +1361,21 @@
             data: userData
         }).then((res) => {
             console.log("User created successfully:", res.data);
-            if (res.data) {
-                users.push(res.data);
-                draw();
-                loadUser();
-            }
 
-            document.getElementById('addUserForm').reset();
+            // Show success message
+            showAlert('success', 'User created successfully');
 
+            // Close the modal
             const addModalElement = document.getElementById('addUserModal');
             if (addModalElement) {
                 const addModal = bootstrap.Modal.getInstance(addModalElement) || new bootstrap.Modal(addModalElement);
                 addModal.hide();
             }
 
-            showAlert('success', 'User created successfully');
-
+            // Refresh the page after a short delay to show the success message
             setTimeout(() => {
                 window.location.reload();
-            }, 500);
+            }, 1000);
         })
             .catch((error) => {
                 console.error('Error creating user:', error);
@@ -1217,8 +1383,8 @@
                     console.log("Server error response:", error.response.data);
                 }
                 showAlert('error', 'Failed to create user. Please try again.');
-            })
-            .finally(() => {
+
+                // Reset button state
                 submitBtn.innerHTML = '<i class="bi bi-person-plus me-2"></i>Add User';
                 submitBtn.classList.remove('btn-loading');
             });
@@ -1275,7 +1441,7 @@
 
             // Create continuous animation
             let startTime = null;
-            const duration = 10000; // 4 seconds for one complete animation
+            const duration = 10000; // 10 seconds for one complete animation
             let animationFrameId;
 
             function step(timestamp) {
@@ -1285,38 +1451,38 @@
                 // Calculate progress based on elapsed time
                 const normalizedTime = (elapsed % duration) / duration;
 
-                // Custom easing function - starts slow, accelerates
+
                 const easeProgress = cubicBezier(0.1, 0.4, 0.7, 0.9, normalizedTime);
 
-                // Calculate position
+
                 const totalDistance = containerWidth + truckWidth + 100; // Add extra distance for smooth transition
                 const currentPosition = -50 + totalDistance * easeProgress;
 
-                // If truck has gone past the container width, reset it to the start
+
                 if (currentPosition > containerWidth) {
-                    // Reset the truck position to start
+
                     truck.style.left = '-50px';
-                    // Reset the animation timer
+
                     startTime = timestamp;
                 } else {
-                    // Update truck position
+
                     truck.style.left = currentPosition + 'px';
                 }
 
-                // Continue the animation loop
+
                 animationFrameId = window.requestAnimationFrame(step);
             }
 
-            // Start the animation loop
+
             animationFrameId = window.requestAnimationFrame(step);
         }
 
-        // Function to animate the trail
+
         function animateTrail() {
             trail.style.animation = 'trailAnimation 0.8s infinite';
         }
 
-        // Cubic bezier function for custom easing
+
         function cubicBezier(p0, p1, p2, p3, t) {
             const u = 1 - t;
             const tt = t * t;
@@ -1327,7 +1493,6 @@
             return uuu * p0 + 3 * uu * t * p1 + 3 * u * tt * p2 + ttt * p3;
         }
 
-        // Start the animation
         startAnimation();
     }
 
