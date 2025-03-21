@@ -1,7 +1,6 @@
 package uz.pdp.salemartpro.service;
 
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -9,6 +8,7 @@ import uz.pdp.salemartpro.dto.CategoryDto;
 import uz.pdp.salemartpro.dto.ProductDto;
 import uz.pdp.salemartpro.dto.RegisterDto;
 import uz.pdp.salemartpro.entity.*;
+import uz.pdp.salemartpro.entity.enums.RoleName;
 import uz.pdp.salemartpro.repo.*;
 
 import java.util.List;
@@ -117,60 +117,42 @@ public class AdminService implements AdminServiceI{
         if (all.isEmpty()) return ResponseEntity.status(404).build();
         return ResponseEntity.status(200).body(all);
     }
-
     @Override
     public HttpEntity<?> createDelivererVsOperator(RegisterDto registerDto) {
-        List<Role> roles = registerDto.getRoles().stream()
-                .map(roleName -> roleRepository.findByRoleName(roleName)
-                        .orElseThrow(() -> new RuntimeException("Role not found: " + roleName)))
-                .toList();
-        if (registerDto.getVehicleNumber()==null){
+
+
+        if (registerDto.getVehicleNumber() == null || registerDto.getVehicleNumber().trim().isEmpty()) {
+            // ROLE_OPERATOR ni bazadan topamiz
+            Role operatorRole = roleRepository.findByRoleName(RoleName.ROLE_OPERATOR)
+                    .orElseThrow(() -> new RuntimeException("Role not found: ROLE_OPERATOR"));
+
             Operator operator = new Operator();
             operator.setUsername(registerDto.getUsername());
             operator.setEmail(registerDto.getEmail());
             operator.setPhone(registerDto.getPhone());
             operator.setPassword(passwordEncoder.encode(registerDto.getPassword()));
-            operator.setRoles(roles);
+            operator.setRoles(List.of(operatorRole)); // Operatorga ROLE_OPERATOR beriladi
             operatorRepository.save(operator);
-        }
-        else {
+        } else {
+            Role deliverRole = roleRepository.findByRoleName(RoleName.ROLE_DELIVERER)
+                    .orElseThrow(() -> new RuntimeException("Role not found: ROLE_OPERATOR"));
+            // Delivery uchun ROLE_DELIVERER qo'shiladi
             Delivery delivery = new Delivery();
             delivery.setUsername(registerDto.getUsername());
             delivery.setEmail(registerDto.getEmail());
             delivery.setPhone(registerDto.getPhone());
-            delivery.setRoles(roles);
+            delivery.setRoles(List.of(deliverRole));
             delivery.setVehicleNumber(registerDto.getVehicleNumber());
             delivery.setPassword(passwordEncoder.encode(registerDto.getPassword()));
             deliveryRepository.save(delivery);
         }
+
         return ResponseEntity.status(201).build();
     }
 
-
-
     @Override
     public ResponseEntity<?> editDelivererVsOperator(Integer userId, RegisterDto registerDto) {
-        if (registerDto.getVehicleNumber() == null) {
-            // Update Operator
-            Optional<Operator> optionalOperator = operatorRepository.findById(userId);
-            if (optionalOperator.isPresent()) {
-                Operator operator = optionalOperator.get();
-                updateOperatorFields(operator, registerDto);
-                operatorRepository.save(operator);
-                return ResponseEntity.ok("Operator updated successfully.");
-            }
-        } else {
-            // Update Delivery
-            Optional<Delivery> optionalDelivery = deliveryRepository.findById(userId);
-            if (optionalDelivery.isPresent()) {
-                Delivery delivery = optionalDelivery.get();
-                updateDeliveryFields(delivery, registerDto);
-                deliveryRepository.save(delivery);
-                return ResponseEntity.ok("Delivery updated successfully.");
-            }
-        }
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+        return null;
     }
 
     @Override
@@ -183,35 +165,6 @@ public class AdminService implements AdminServiceI{
     public HttpEntity<?> getDeliverer(int id) {
         Delivery delivery = deliveryRepository.findById(id).orElseThrow();
         return ResponseEntity.status(200).body(delivery);
-    }
-
-    private void updateOperatorFields(Operator operator, RegisterDto registerDto) {
-        List<Role> roles = registerDto.getRoles().stream()
-                .map(roleName -> roleRepository.findByRoleName(roleName)
-                        .orElseThrow(() -> new RuntimeException("Role not found: " + roleName)))
-                .toList();
-
-        if (registerDto.getRoles() != null) operator.setRoles(roles);
-        if (registerDto.getUsername() != null) operator.setUsername(registerDto.getUsername());
-        if (registerDto.getEmail() != null) operator.setEmail(registerDto.getEmail());
-        if (registerDto.getPhone() != null) operator.setPhone(registerDto.getPhone());
-        if (registerDto.getPassword() != null) operator.setPassword(passwordEncoder.encode(registerDto.getPassword()));
-        if (registerDto.getRoles() != null && !registerDto.getRoles().isEmpty()) operator.setRoles(roles);
-    }
-
-    private void updateDeliveryFields(Delivery delivery, RegisterDto registerDto) {
-        List<Role> roles = registerDto.getRoles().stream()
-                .map(roleName -> roleRepository.findByRoleName(roleName)
-                        .orElseThrow(() -> new RuntimeException("Role not found: " + roleName)))
-                .toList();
-
-        if(registerDto.getRoles() != null) delivery.setRoles(roles);
-        if (registerDto.getUsername() != null) delivery.setUsername(registerDto.getUsername());
-        if (registerDto.getEmail() != null) delivery.setEmail(registerDto.getEmail());
-        if (registerDto.getPhone() != null) delivery.setPhone(registerDto.getPhone());
-        if (registerDto.getPassword() != null) delivery.setPassword(passwordEncoder.encode(registerDto.getPassword()));
-        if (registerDto.getRoles() != null && !registerDto.getRoles().isEmpty()) delivery.setRoles(roles);
-        if (registerDto.getVehicleNumber() != null) delivery.setVehicleNumber(registerDto.getVehicleNumber());
     }
 
 
