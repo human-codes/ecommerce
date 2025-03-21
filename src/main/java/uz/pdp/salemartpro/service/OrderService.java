@@ -71,7 +71,6 @@ public class OrderService implements OrderServiceI{
 
         User user = userRepository.findByUsername(username).orElseThrow();
         Order order = new Order();
-        order.setStatus(OrderStatus.NEW);
         order.setUser(user);
         order.setOrderDate(LocalDateTime.now());
         order.setDeliveredAddress(address);

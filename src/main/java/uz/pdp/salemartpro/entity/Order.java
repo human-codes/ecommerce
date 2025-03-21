@@ -20,14 +20,15 @@ public class Order extends BaseEntity{
     private LocalDateTime orderDate;
 
     @Enumerated(EnumType.STRING)
-    private OrderStatus status;
+    private OrderStatus status=OrderStatus.PENDING;
+
+    private Boolean isAttached=false;
 
     @ManyToOne
     private User user;
 
     private String phoneNumber;
     private String notes;
-
 
 
     @ManyToOne
