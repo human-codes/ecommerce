@@ -143,7 +143,6 @@ public class AdminController {
                 return ResponseEntity.badRequest().body(errorResponse);
             }
 
-
             Delivery delivery = delivereyServis.findById(id);
             if (delivery == null) {
                 Map<String, String> errorResponse = new HashMap<>();
@@ -151,16 +150,36 @@ public class AdminController {
                 return ResponseEntity.notFound().build();
             }
 
-            // Update operator information
+            // Для отладки
+            System.out.println("Updating delivery with ID: " + id);
+            System.out.println("Username: " + request.getUsername());
+            System.out.println("Email: " + request.getEmail());
+            System.out.println("Phone: " + request.getPhone());
+            System.out.println("Vehicle Number: " + request.getVehicleNumber());
+            System.out.println("Online Status: " + request.getOnline());
+
             delivery.setUsername(request.getUsername());
             delivery.setEmail(request.getEmail());
             delivery.setPhone(request.getPhone());
             delivery.setVehicleNumber(request.getVehicleNumber());
 
-            // Save updated operator
+            // Проверяем, что метод существует и работает правильно
+            Boolean onlineStatus = request.getOnline();
+            if (onlineStatus != null) {
+                delivery.setIsOnline(onlineStatus);
+                // Альтернативный вариант, если метод называется по-другому
+                // delivery.setActive(onlineStatus);
+                // delivery.setIsActive(onlineStatus);
+            }
+
+            // Сохраняем обновленные данные
             Delivery updatedOperator = delivereyServis.save(delivery);
 
-            // Return success response
+            // Проверяем, что данные сохранились
+            System.out.println("Updated delivery: " + updatedOperator.getId());
+            System.out.println("Updated online status: " + updatedOperator.getIsOnline());
+
+            // Возвращаем успешный ответ
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("message", "Operator information updated successfully");
@@ -169,6 +188,10 @@ public class AdminController {
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
+            // Подробный лог ошибки
+            System.err.println("Error updating delivery: " + e.getMessage());
+            e.printStackTrace();
+
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("error", "Failed to update operator information: " + e.getMessage());
             return ResponseEntity.internalServerError().body(errorResponse);

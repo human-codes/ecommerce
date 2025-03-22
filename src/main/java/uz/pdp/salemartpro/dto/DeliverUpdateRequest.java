@@ -1,28 +1,17 @@
 package uz.pdp.salemartpro.dto;
-
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class DeliverUpdateRequest {
-
-    @NotBlank(message = "Username is required")
-    @Size(min = 4, max = 50, message = "Username must be between 4 and 50 characters")
     private String username;
-
-    @NotBlank(message = "Email is required")
-    @Email(message = "Email should be valid")
     private String email;
-
-    @NotBlank(message = "Phone is required")
     private String phone;
-
-    public String getVehicleNumber() {
-        return vehicleNumber;
-    }
-
     private String vehicleNumber;
-    // Getters and setters
+
+    // Используем аннотацию для явного указания имени свойства в JSON
+    @JsonProperty("online")
+    private Boolean online;
+
+    // Геттеры и сеттеры
     public String getUsername() {
         return username;
     }
@@ -47,4 +36,30 @@ public class DeliverUpdateRequest {
         this.phone = phone;
     }
 
+    public String getVehicleNumber() {
+        return vehicleNumber;
+    }
+
+    public void setVehicleNumber(String vehicleNumber) {
+        this.vehicleNumber = vehicleNumber;
+    }
+
+    public Boolean getOnline() {
+        return online;
+    }
+
+    public void setOnline(Boolean online) {
+        this.online = online;
+    }
+
+    @Override
+    public String toString() {
+        return "DeliverUpdateRequest{" +
+                "username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", phone='" + phone + '\'' +
+                ", vehicleNumber='" + vehicleNumber + '\'' +
+                ", online=" + online +
+                '}';
+    }
 }
