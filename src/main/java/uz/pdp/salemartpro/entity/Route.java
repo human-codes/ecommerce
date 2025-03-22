@@ -13,6 +13,4 @@ import lombok.NoArgsConstructor;
 public class Route extends BaseEntity{
     @ManyToOne
     private Delivery delivery;
-
-
 }

@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cancelled Orders Management</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+  <style>
+    body {
+      background-color: #f8f9fa;
+      padding: 20px;
+    }
+
+    .order-container {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      color: #0a192f;
+      font-weight: bold;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 3px solid #1ecb63;
+      display: inline-block;
+    }
+
+    .table-header {
+      background-color: #0a192f;
+      color: white;
+    }
+
+    .search-box {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 10px 15px 10px 40px;
+      border-radius: 8px;
+      border: 1px solid #ced4da;
+      font-size: 16px;
+    }
+
+    .search-box i {
+      position: absolute;
+      left: 15px;
+      top: 13px;
+      color: #6c757d;
+    }
+
+    .status-badge {
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .status-cancelled {
+      background-color: rgba(220, 53, 69, 0.2);
+      color: #dc3545;
+    }
+
+    .pagination-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .pagination .page-item.active .page-link {
+      background-color: #1ecb63;
+      border-color: #1ecb63;
+    }
+
+    .pagination .page-link {
+      color: #0a192f;
+    }
+
+    .pagination .page-link:hover {
+      color: #1ecb63;
+    }
+
+    .table-responsive {
+      overflow-x: auto;
+    }
+
+    .loading-spinner {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100px;
+    }
+
+    .loading-spinner i {
+      font-size: 40px;
+      color: #0a192f;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .nav-tabs .nav-link {
+      color: #6c757d;
+      font-weight: bold;
+    }
+
+    .nav-tabs .nav-link.active {
+      color: #0a192f;
+      border-bottom: 3px solid #1ecb63;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 30px;
+      color: #6c757d;
+    }
+
+    .empty-state i {
+      font-size: 48px;
+      margin-bottom: 15px;
+      color: #dee2e6;
+    }
+
+    .empty-state p {
+      font-size: 16px;
+      margin-bottom: 0;
+    }
+
+    .cancel-reason {
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      padding: 10px;
+      margin-top: 5px;
+      color: #dc3545;
+      font-style: italic;
+    }
+
+    .deliverer-info {
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      padding: 10px;
+      margin-top: 5px;
+    }
+
+    .attached-badge {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .attached-true {
+      background-color: rgba(40, 167, 69, 0.2);
+      color: #28a745;
+    }
+
+    .attached-false {
+      background-color: rgba(220, 53, 69, 0.2);
+      color: #dc3545;
+    }
+
+    .notes-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+
+    .notes-toggle {
+      cursor: pointer;
+      color: #0a192f;
+    }
+
+    .notes-toggle:hover {
+      color: #1ecb63;
+    }
+
+    .address-text {
+      max-width: 200px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .address-text:hover {
+      white-space: normal;
+      overflow: visible;
+    }
+
+    .reason-toggle {
+      cursor: pointer;
+      color: #dc3545;
+    }
+
+    .reason-toggle:hover {
+      color: #c82333;
+    }
+
+    .reason-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+  </style>
+</head>
+
+<body>
+<div class="container">
+  <h2 class="text-center mb-4">Order Management</h2>
+
+  <ul class="nav nav-tabs mb-4">
+    <li class="nav-item">
+      <a class="nav-link" href="new-orders.html">New Orders</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="in-progress-orders.html">In Progress</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="delivered-orders.html">Delivered</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link active" href="cancelled-orders.html">Cancelled</a>
+    </li>
+  </ul>
+
+  <div class="order-container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h3 class="section-title">Cancelled Orders</h3>
+      <span class="status-badge status-cancelled">CANCELLED</span>
+    </div>
+
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="text" id="orderSearch" placeholder="Search by customer name, phone, address..." onkeyup="searchOrders()">
+        </div>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead class="table-header">
+        <tr>
+          <th>Order #</th>
+          <th>Date & Time</th>
+          <th>Customer</th>
+          <th>Phone</th>
+          <th>Address</th>
+          <th>Deliverer</th>
+          <th>Notes</th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody id="orders-table-body">
+        <!-- Orders will be loaded here -->
+        <tr>
+          <td colspan="8">
+            <div class="loading-spinner">
+              <i class="fas fa-spinner"></i>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pagination-container">
+      <nav aria-label="Page navigation">
+        <ul class="pagination" id="pagination">
+          <!-- Pagination will be generated here -->
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm Detach Modal -->
+<div class="modal fade" id="confirmDetachModal" tabindex="-1" aria-labelledby="confirmDetachModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color: #0a192f; color: white;">
+        <h5 class="modal-title" id="confirmDetachModalLabel">Confirm Detach</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to detach this order? This will:</p>
+        <ul>
+          <li>Remove the assigned deliverer</li>
+          <li>Change the order status to NEW</li>
+          <li>Set isAttached to false</li>
+        </ul>
+        <input type="hidden" id="detachOrderId">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger" onclick="detachOrder()">Detach Order</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="js/request.js"></script>
+
+<script>
+  // Global variables
+  let orders = [];
+  let currentPage = 1;
+  let pageSize = 10;
+  let totalPages = 1;
+  let confirmDetachModal;
+
+  // Initialize when page loads
+  document.addEventListener('DOMContentLoaded', function() {
+    confirmDetachModal = new bootstrap.Modal(document.getElementById('confirmDetachModal'));
+    loadOrders();
+  });
+
+  async function loadOrders() {
+    try {
+      // Show loading spinner
+      document.getElementById('orders-table-body').innerHTML = `
+        <tr>
+          <td colspan="8">
+            <div class="loading-spinner">
+              <i class="fas fa-spinner"></i>
+            </div>
+          </td>
+        </tr>
+      `;
+
+      // Get search query
+      const searchQuery = document.getElementById('orderSearch').value;
+
+      // Fetch orders from API with status=CANCELLED
+      const response = await request.get('/admin/orders', {
+        params: {
+          status: 'CANCELLED',
+          page: currentPage - 1, // API uses 0-based indexing
+          size: pageSize,
+          search: searchQuery || null
+        }
+      });
+
+      // Extract data
+      const data = response.data;
+      orders = data.content || [];
+      totalPages = data.totalPages || 1;
+
+      // Render orders
+      renderOrders();
+
+      // Render pagination
+      renderPagination();
+
+    } catch (error) {
+      console.error("Error loading orders:", error);
+      document.getElementById('orders-table-body').innerHTML = `
+        <tr>
+          <td colspan="8" class="text-center text-danger">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            Error loading orders. Please try again.
+          </td>
+        </tr>
+      `;
+    }
+  }
+
+  function renderOrders() {
+    const tableBody = document.getElementById('orders-table-body');
+
+    if (orders.length === 0) {
+      tableBody.innerHTML = `
+        <tr>
+          <td colspan="8">
+            <div class="empty-state">
+              <i class="fas fa-ban"></i>
+              <h4>No Cancelled Orders</h4>
+              <p>There are no cancelled orders matching your filters</p>
+            </div>
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    let html = '';
+
+    orders.forEach(order => {
+      const orderDate = new Date(order.orderDate).toLocaleString();
+      const customerName = order.user ? order.user.username : 'N/A';
+
+      // Format address with commas and line breaks
+      let address = 'N/A';
+      if (order.deliveredAddress) {
+        const fullAddress = order.deliveredAddress.fullAddress;
+        // Split address parts and format them
+        const addressParts = fullAddress.split(',').map(part => part.trim());
+        address = `<span class="address-text" title="${fullAddress}">${addressParts.join(', ')}</span>`;
+      }
+
+      // Generate a random cancellation reason for demo purposes
+      const cancelReasons = [
+        "Customer requested cancellation",
+        "Payment failed",
+        "Items out of stock",
+        "Delivery address unreachable",
+        "Duplicate order"
+      ];
+      const randomReason = cancelReasons[Math.floor(Math.random() * cancelReasons.length)];
+
+      // Reason with toggle functionality
+      const reasonId = `reason-${order.id}`;
+      const reasonHtml = `
+        <div>
+          <span class="reason-toggle" onclick="toggleReason('${reasonId}')">
+            <i class="fas fa-info-circle me-1"></i> View Reason
+          </span>
+          <div id="${reasonId}" class="reason-content mt-2 cancel-reason">
+            ${randomReason}
+          </div>
+        </div>
+      `;
+
+      // Deliverer information (may be null for cancelled orders)
+      let delivererInfo = 'Not assigned';
+      if (order.delivery) {
+        const deliverer = order.delivery;
+        const delivererName = deliverer.username || 'N/A';
+        const vehicleNumber = deliverer.vehicleNumber || 'N/A';
+
+        delivererInfo = `
+          <div>${delivererName}</div>
+          <div class="deliverer-info">
+            <small><i class="fas fa-truck me-1"></i>${vehicleNumber}</small>
+          </div>
+        `;
+      }
+
+      // Notes with toggle functionality
+      const notesId = `notes-${order.id}`;
+      const notes = order.notes || 'No notes';
+      const notesHtml = `
+        <div>
+          <span class="notes-toggle" onclick="toggleNotes('${notesId}')">
+            <i class="fas fa-sticky-note me-1"></i> View Notes
+          </span>
+          <div id="${notesId}" class="notes-content mt-2">
+            ${notes}
+          </div>
+          ${reasonHtml}
+        </div>
+      `;
+
+      // Attached badge
+      const isAttached = order.isAttached === true;
+      const attachedBadge = `
+        <span class="attached-badge attached-${isAttached}" onclick="openDetachModal(${order.id})">
+          ${isAttached ? 'Attached' : 'Detached'}
+        </span>
+      `;
+
+      html += `
+        <tr>
+          <td>${order.id}</td>
+          <td>${orderDate}</td>
+          <td>${customerName}</td>
+          <td>${order.phoneNumber || 'N/A'}</td>
+          <td>${address}</td>
+          <td>${delivererInfo}</td>
+          <td>${notesHtml}</td>
+          <td>${attachedBadge}</td>
+        </tr>
+      `;
+    });
+
+    tableBody.innerHTML = html;
+  }
+
+  function renderPagination() {
+    const pagination = document.getElementById('pagination');
+    let html = '';
+
+    // Previous button
+    html += `
+      <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+        <a class="page-link" href="#" onclick="changePage(${currentPage - 1}); return false;">
+          <i class="fas fa-chevron-left"></i>
+        </a>
+      </li>
+    `;
+
+    // Page numbers
+    const startPage = Math.max(1, currentPage - 2);
+    const endPage = Math.min(totalPages, startPage + 4);
+
+    for (let i = startPage; i <= endPage; i++) {
+      html += `
+        <li class="page-item ${i === currentPage ? 'active' : ''}">
+          <a class="page-link" href="#" onclick="changePage(${i}); return false;">${i}</a>
+        </li>
+      `;
+    }
+
+    // Next button
+    html += `
+      <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+        <a class="page-link" href="#" onclick="changePage(${currentPage + 1}); return false;">
+          <i class="fas fa-chevron-right"></i>
+        </a>
+      </li>
+    `;
+
+    pagination.innerHTML = html;
+  }
+
+  function toggleNotes(notesId) {
+    const notesElement = document.getElementById(notesId);
+    if (notesElement.style.maxHeight) {
+      notesElement.style.maxHeight = null;
+    } else {
+      notesElement.style.maxHeight = notesElement.scrollHeight + "px";
+    }
+  }
+
+  function toggleReason(reasonId) {
+    const reasonElement = document.getElementById(reasonId);
+    if (reasonElement.style.maxHeight) {
+      reasonElement.style.maxHeight = null;
+    } else {
+      reasonElement.style.maxHeight = reasonElement.scrollHeight + "px";
+    }
+  }
+
+  function changePage(page) {
+    if (page < 1 || page > totalPages) return;
+
+    currentPage = page;
+    loadOrders();
+
+    // Scroll to top of the table
+    document.querySelector('.order-container').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function searchOrders() {
+    currentPage = 1; // Reset to first page when searching
+    loadOrders();
+  }
+
+  function openDetachModal(orderId) {
+    document.getElementById('detachOrderId').value = orderId;
+    confirmDetachModal.show();
+  }
+
+  async function detachOrder() {
+    const orderId = document.getElementById('detachOrderId').value;
+
+    try {
+      await request.post(`/admin/${orderId}/detach`);
+
+      confirmDetachModal.hide();
+      showAlert(`Order #${orderId} has been detached and set to NEW status`, 'success');
+
+      // Reload orders after a short delay
+      setTimeout(() => {
+        loadOrders();
+      }, 1500);
+
+    } catch (error) {
+      console.error("Error detaching order:", error);
+      showAlert("Failed to detach order", "danger");
+    }
+  }
+
+  function showAlert(message, type) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-5`;
+    alertDiv.style.zIndex = "9999";
+    alertDiv.innerHTML = `
+      ${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+    document.body.appendChild(alertDiv);
+
+    // Auto dismiss after 3 seconds
+    setTimeout(() => {
+      alertDiv.classList.remove('show');
+      setTimeout(() => {
+        alertDiv.remove();
+      }, 300);
+    }, 3000);
+  }
+</script>
+</body>
+</html>
