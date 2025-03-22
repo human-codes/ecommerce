@@ -170,7 +170,12 @@ public class OrderService implements OrderServiceI{
 
         // Update the Order
         order.setIsAttached(false);
-        order.setStatus(OrderStatus.NEW);
+        if (order.getStatus().equals(OrderStatus.IN_PROGRESS) || order.getStatus().equals(OrderStatus.DELIVERED)) {
+            order.setStatus(OrderStatus.CANCELLED);
+        }
+        else {
+            order.setStatus(OrderStatus.NEW);
+        }
         order.setDelivery(null);
 
         Order updatedOrder = orderRepository.save(order);
