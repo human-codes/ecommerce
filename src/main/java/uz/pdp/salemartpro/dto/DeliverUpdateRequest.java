@@ -19,6 +19,7 @@ public class DeliverUpdateRequest {
     @NotBlank(message = "Phone is required")
      String phone;
 
+     Boolean online;
 
      String vehicleNumber;
 
