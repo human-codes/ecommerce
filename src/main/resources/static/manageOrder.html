@@ -760,7 +760,7 @@
             confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
             confirmBtn.disabled = true;
 
-            const response = await request.post('/route/save', {
+            const response = await request.post('/admin/route/save', {
                 deliveryId: selectedDelivererId,
                 orderIds: orderIds  // Using order IDs
             });
