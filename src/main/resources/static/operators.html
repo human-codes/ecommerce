@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+<!DOCTYPE
+        html >
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -676,6 +677,7 @@
                 <table id="usersTable" class="table table-striped table-hover">
                     <thead>
                     <tr>
+                        <th>#</th>
                         <th>ID</th>
                         <th>Username</th>
                         <th>Email</th>
@@ -917,7 +919,7 @@
     function loadUser() {
         // Show loading state in the table
         const tbody = usersTable.querySelector('tbody');
-        tbody.innerHTML = '<tr><td colspan="7" class="text-center">Loading users...</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center">Loading users...</td></tr>';
 
         // Fetch users from the backend using request function
         request({
@@ -937,7 +939,7 @@
                 console.error('Error loading users:', error);
 
                 // Show error message in the table
-                tbody.innerHTML = '<tr><td colspan="7" class="text-center text-danger">Failed to load users. Please try again.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center text-danger">Failed to load users. Please try again.</td></tr>';
 
                 // Show error alert
                 showAlert('error', 'Failed to load users. Please try again.');
@@ -953,7 +955,7 @@
 
         // Check if filtered users array is empty
         if (filteredUsers.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" class="text-center">No users found</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="8" class="text-center">No users found</td></tr>';
             updatePaginationInfo(0, 0, 0);
             return;
         }
@@ -966,8 +968,9 @@
         const currentPageData = filteredUsers.slice(startIndex, endIndex);
 
         // Add each user to the table
-        currentPageData.forEach(user => {
+        currentPageData.forEach((user, index) => {
             const tr = document.createElement('tr');
+            const sequentialNumber = startIndex + index + 1;
 
             let rolesHtml = 'No roles';
             if (user.roles && Array.isArray(user.roles) && user.roles.length > 0) {
@@ -978,18 +981,19 @@
 
             // Create table cells for user data
             tr.innerHTML = `
-                    <td>${user.id}</td>
-                    <td>${user.username}</td>
-                    <td>${user.email}</td>
-                    <td>${user.phone || '-'}</td>
-                    <td>${user.vehicleNumber || '-'}</td>
-                    <td>${rolesHtml}</td>
-                    <td>
-                        <button class="action-btn action-btn-edit" onclick="openEditUserModal(${user.id})">
-                            <i class="bi bi-pencil"></i>
-                        </button>
-                    </td>
-                `;
+                  <td>${sequentialNumber}</td>
+                  <td>${user.id}</td>
+                  <td>${user.username}</td>
+                  <td>${user.email}</td>
+                  <td>${user.phone || '-'}</td>
+                  <td>${user.vehicleNumber || '-'}</td>
+                  <td>${rolesHtml}</td>
+                  <td>
+                      <button class="action-btn action-btn-edit" onclick="openEditUserModal(${user.id})">
+                          <i class="bi bi-pencil"></i>
+                      </button>
+                  </td>
+              `;
 
             tbody.appendChild(tr);
         });
@@ -1244,12 +1248,32 @@
             method: 'POST',
             data: userData
         }).then((res) => {
+           loadUser();
+            loadUser();
             console.log("User created successfully:", res.data);
+
             if (res.data) {
-                users.push(res.data);
-                filteredUsers = [...users]; // Update filtered users
+                // Add the new user to the beginning of the array for better visibility
+                users.unshift(res.data);
+
+                // If we're searching, check if the new user matches the search criteria
+                if (searchTerm) {
+                    if ((res.data.username && res.data.username.toLowerCase().includes(searchTerm)) ||
+                        (res.data.email && res.data.email.toLowerCase().includes(searchTerm)) ||
+                        (res.data.phone && res.data.phone.toLowerCase().includes(searchTerm)) ||
+                        (res.data.vehicleNumber && res.data.vehicleNumber.toLowerCase().includes(searchTerm))) {
+                        filteredUsers.unshift(res.data);
+                    }
+                } else {
+                    // If not searching, update filtered users with all users
+                    filteredUsers = [...users];
+                }
+
+                // Go to the first page to show the new user
+                currentPage = 1;
 
                 // Refresh pagination and table
+
                 updatePagination();
                 drawPaginatedUsers();
             }
@@ -1310,3 +1334,4 @@
 </script>
 </body>
 </html>
+

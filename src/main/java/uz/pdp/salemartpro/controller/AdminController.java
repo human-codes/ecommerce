@@ -1,22 +1,24 @@
 package uz.pdp.salemartpro.controller;
 
 
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.pdp.salemartpro.dto.*;
-import uz.pdp.salemartpro.entity.Delivery;
-import uz.pdp.salemartpro.entity.Operator;
-import uz.pdp.salemartpro.entity.Order;
+import uz.pdp.salemartpro.entity.*;
 import uz.pdp.salemartpro.entity.enums.DelivererStatus;
-import uz.pdp.salemartpro.repo.DeliveryRepository;
-import uz.pdp.salemartpro.repo.OrderRepository;
+import uz.pdp.salemartpro.entity.enums.OrderStatus;
+import uz.pdp.salemartpro.repo.*;
 import uz.pdp.salemartpro.service.AdminServiceI;
 import uz.pdp.salemartpro.service.DelivereyServis;
 import uz.pdp.salemartpro.service.OperatorService;
+import uz.pdp.salemartpro.service.OrderService;
 
 import java.util.HashMap;
 import java.util.List;
@@ -32,13 +34,21 @@ public class AdminController {
     private final OperatorService operatorService;
     private final DeliveryRepository deliveryRepository;
     private final OrderRepository orderRepository;
+    private final RouteRepository routeRepository;
+    private final RouteItemRepository routeItemRepository;
+    private final OrderService orderService;
+    private final UserRepository userRepository;
 
-    public AdminController(AdminServiceI adminServiceI, DelivereyServis delivereyServis, OperatorService operatorService, DeliveryRepository deliveryRepository, OrderRepository orderRepository) {
+    public AdminController(AdminServiceI adminServiceI, DelivereyServis delivereyServis, OperatorService operatorService, DeliveryRepository deliveryRepository, OrderRepository orderRepository, RouteRepository routeRepository, RouteItemRepository routeItemRepository, OrderService orderService, UserRepository userRepository) {
         this.adminServiceI = adminServiceI;
         this.delivereyServis = delivereyServis;
         this.operatorService = operatorService;
         this.deliveryRepository = deliveryRepository;
         this.orderRepository = orderRepository;
+        this.routeRepository = routeRepository;
+        this.routeItemRepository = routeItemRepository;
+        this.orderService = orderService;
+        this.userRepository = userRepository;
     }
 
     @DeleteMapping("/category/{id}")
@@ -62,14 +72,15 @@ public class AdminController {
     }
 
     @PutMapping("/product/{productId}")
-    public HttpEntity<?> updateProduct(@PathVariable Integer productId,@RequestBody ProductDto productDTO) {
-        return adminServiceI.updateProduct(productDTO,productId);
+    public HttpEntity<?> updateProduct(@PathVariable Integer productId, @RequestBody ProductDto productDTO) {
+        return adminServiceI.updateProduct(productDTO, productId);
     }
 
     @DeleteMapping("/product/{id}")
     public HttpEntity<?> deleteProduct(@PathVariable int id) {
         return adminServiceI.deleteProduct(id);
     }
+
     @GetMapping("/delivers")
     public HttpEntity<?> getDeliverers() {
         return adminServiceI.getDeliverers();
@@ -143,7 +154,6 @@ public class AdminController {
                 return ResponseEntity.badRequest().body(errorResponse);
             }
 
-
             Delivery delivery = delivereyServis.findById(id);
             if (delivery == null) {
                 Map<String, String> errorResponse = new HashMap<>();
@@ -151,16 +161,36 @@ public class AdminController {
                 return ResponseEntity.notFound().build();
             }
 
-            // Update operator information
+            // Для отладки
+            System.out.println("Updating delivery with ID: " + id);
+            System.out.println("Username: " + request.getUsername());
+            System.out.println("Email: " + request.getEmail());
+            System.out.println("Phone: " + request.getPhone());
+            System.out.println("Vehicle Number: " + request.getVehicleNumber());
+            System.out.println("Online Status: " + request.getOnline());
+
             delivery.setUsername(request.getUsername());
             delivery.setEmail(request.getEmail());
             delivery.setPhone(request.getPhone());
             delivery.setVehicleNumber(request.getVehicleNumber());
 
-            // Save updated operator
+            // Проверяем, что метод существует и работает правильно
+            Boolean onlineStatus = request.getOnline();
+            if (onlineStatus != null) {
+                delivery.setIsOnline(onlineStatus);
+                // Альтернативный вариант, если метод называется по-другому
+                // delivery.setActive(onlineStatus);
+                // delivery.setIsActive(onlineStatus);
+            }
+
+            // Сохраняем обновленные данные
             Delivery updatedOperator = delivereyServis.save(delivery);
 
-            // Return success response
+            // Проверяем, что данные сохранились
+            System.out.println("Updated delivery: " + updatedOperator.getId());
+            System.out.println("Updated online status: " + updatedOperator.getIsOnline());
+
+            // Возвращаем успешный ответ
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("message", "Operator information updated successfully");
@@ -169,12 +199,17 @@ public class AdminController {
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
+            // Подробный лог ошибки
+            System.err.println("Error updating delivery: " + e.getMessage());
+            e.printStackTrace();
+
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("error", "Failed to update operator information: " + e.getMessage());
             return ResponseEntity.internalServerError().body(errorResponse);
         }
     }
-/// ///////////////////////////////////////////////////
+
+    /// ///////////////////////////////////////////////////
 
     @GetMapping("/deliverer{id}")
     public HttpEntity<?> getDeliverer(@PathVariable int id) {
@@ -196,12 +231,67 @@ public class AdminController {
         return ResponseEntity.ok(availableDeliverers);
     }
 
+
     @GetMapping("/orders/unassigned")
     public HttpEntity<?> getUnassignedOrders() {
         List<Order> byIsAttached = orderRepository.findByIsAttached(false);
         return ResponseEntity.ok(byIsAttached);
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        return ResponseEntity.ok(users);
+    }
+    @PostMapping("/route/save")
+    public HttpEntity<?> saveRoute(@RequestBody RouteDto routeDto) {
+        Delivery delivery = deliveryRepository.findById(routeDto.getDeliveryId()).orElseThrow();
+        Route route = new Route();
+        route.setDelivery(delivery);
+        delivery.setDelivererStatus(DelivererStatus.ON_DELIVERY);
+        deliveryRepository.save(delivery);
+        routeRepository.save(route);
+
+        int stepOrder = 1;
+        for (Integer orderId : routeDto.getOrderIds()) {
+            Order order = orderRepository.findById(orderId).orElseThrow();
+            RouteItem routeItem = new RouteItem();
+            routeItem.setOrder(order);
+            routeItem.setRoute(route);
+            routeItem.setStepOrder(stepOrder++);
+
+            order.setIsAttached(true);
+            order.setStatus(OrderStatus.IN_PROGRESS);
+            order.setDelivery(delivery);
+            orderRepository.save(order);
+            routeItemRepository.save(routeItem);
+        }
+        return ResponseEntity.ok("Route saved successfully!");
+    }
+
+
+    @GetMapping("/orders")
+    public ResponseEntity<Page<OrderResponse>> getOrders(
+            @RequestParam(required = false) String status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String search) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "orderDate"));
+
+        OrderStatus orderStatus = status != null ? OrderStatus.valueOf(status) : null;
+
+        Page<OrderResponse> orders = orderService.findOrders(orderStatus, search, pageable);
+
+        return ResponseEntity.ok(orders);
+    }
+
+    @PostMapping("/{id}/detach")
+    public ResponseEntity<OrderResponse> detachOrder(@PathVariable Integer id) {
+        OrderResponse detachedOrder = orderService.detachOrder(id);
+        return ResponseEntity.ok(detachedOrder);
+    }
 }
+
 
 //security, status delivery string,

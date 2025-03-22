@@ -1085,20 +1085,19 @@
 
     <div class="d-flex align-items-center me-auto me-4"> <!-- ms-4 bilan chapga yaqinlashtiramiz -->
         <a class="navbar-brand " style="color: #6c757d; font-weight: bolder; font-size: 17px"
-           href="store.html">ASOSIY</a>
-        <a class="navbar-brand " style="color: #6c757d; font-weight: bolder; font-size: 17px" href="contact.html">KONTAKT</a>
-        <a class="navbar-brand " style="color: #6c757d; font-weight: bolder; font-size: 17px" href="about.html">BIZ
-            HAQIMIZDA</a>
+           href="store.html">HOME</a>
+        <a class="navbar-brand " style="color: #6c757d; font-weight: bolder; font-size: 17px" href="contact.html">CONTACT</a>
+        <a class="navbar-brand " style="color: #6c757d; font-weight: bolder; font-size: 17px" href="about.html">ABOUT US</a>
         <a class="navbar-brand admin-page" href="adminpage.html"
            style="display: none; font-weight: bolder; color: #6c757d; font-size: 17px;">Admin page</a>
     </div>
     <div class="d-flex align-items-center">
         <div class="cart-icons d-flex align-items-center">
             <a href="#" onclick="toggleFavoritesPanel(); return false;"><i
-                    class="bi bi-heart"></i><span>Saralanganlar</span></a>
-            <a href="basket.html"><i class="bi bi-cart"></i><span>Savat</span><span class="cart-badge"
+                    class="bi bi-heart"></i><span>Likes</span></a>
+            <a href="basket.html"><i class="bi bi-cart"></i><span>Basket</span><span class="cart-badge"
                                                                                     id="cartSize">3</span></a>
-            <a href="orders.html"><i class="bi bi-box-seam"></i><span>Buyurtmalar</span></a>
+            <a href="orders.html"><i class="bi bi-box-seam"></i><span>Orders</span></a>
         </div>
 
 
@@ -1135,7 +1134,7 @@
             <div class="ad-content">
                 <h2>48V zarbaviy buragich</h2>
                 <p>Akkumulyatorli drel, 24 ta buyumdan iborat to'plam.</p>
-                <button class="ad-btn">Batafsil</button>
+                <button class="ad-btn">View</button>
             </div>
             <img src="images/reklama/img.png" alt="Reklama 1">
         </div>
@@ -1162,7 +1161,7 @@
 <!-- Saralanganlar paneli -->
 <div id="favorites-panel" class="favorites-panel">
     <div class="panel-header">
-        <h4>Saralangan mahsulotlar</h4>
+        <h4>Your liked products</h4>
         <button onclick="toggleFavoritesPanel()" class="close-btn">&times;</button>
     </div>
     <div id="favorites-list" class="favorites-list">
@@ -1195,10 +1194,9 @@
 <footer class="footer">
     <div class="containerjon">
         <div class="footer-section">
-            <h2>Bizning kompaniya</h2>
+            <h2>Our Company</h2>
             <div class="underline"></div>
-            <p>Ajoyib mahsulotlar va xizmatlar uchun yagona manzil. Biz bilan bog'laning va so'nggi takliflarimiz hamda
-                maxsus chegirmalarimizdan xabardor bo'ling.</p>
+            <p>The one-stop destination for amazing products and services. Connect with us and stay updated on our latest offers and exclusive discounts.</p>
             <div class="social-icons">
                 <a href="#"><i class="fab fa-facebook"></i></a>
                 <a href="#"><i class="fab fa-twitter"></i></a>
@@ -1208,20 +1206,21 @@
         </div>
 
         <div class="footer-section">
-            <h2>Tezkor havolalar</h2>
+            <h2>Quick Links</h2>
             <div class="underline"></div>
             <ul>
-                <li><a href="store.html">Asosiy</a></li>
-                <li><a href="#">Kategoriyalar</a></li>
-                <li><a href="contact.html">Kontakt</a></li>
+                <li><a href="store.html">Home</a></li>
+                <li><a href="#">Categories</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li><a href="inquiry.html">Inquiry</a></li>
             </ul>
         </div>
 
         <div class="footer-section">
-            <h2>Aloqada bo'ling</h2>
+            <h2>Stay Connected</h2>
             <div class="underline"></div>
-            <input type="email" placeholder="Telefon raqam kiriting..." class="email-input">
-            <button class="subscribe-btn">Obuna bo'lish</button>
+            <input type="email" placeholder="Enter your phone number..." class="email-input">
+            <button class="subscribe-btn">Subscribe</button>
         </div>
     </div>
 </footer>
@@ -1576,8 +1575,8 @@
             productList.innerHTML = `
                 <div class="no-products-message col-12">
                     <i class="bi bi-search"></i>
-                    <h4>Mahsulotlar topilmadi</h4>
-                    <p>Boshqa so'rov bilan qayta urinib ko'ring</p>
+                    <h4>Products are not found</h4>
+                    <p>You can refresh the page to get all products</p>
                 </div>
             `;
             return;
@@ -1655,8 +1654,8 @@
         if (likedProducts.length === 0) {
             productElement.innerHTML = `
             <div class="empty-likes text-center mt-5">
-                <h4 class="text-danger mt-3">Hech qanday tanlangan mahsulot yo'q</h4>
-                <p>Mahsulotlarni yoqtiring va ularni shu yerda ko'ring.</p>
+                <h4 class="text-danger mt-3">There is no any liked product</h4>
+                <p>Click like button on product cart and you can see it here</p>
             </div>
         `;
             return;
@@ -1901,10 +1900,10 @@
 
         if (index !== -1) {
             likedProducts.splice(index, 1);
-            showNotification("Mahsulot saralanganlardan olib tashlandi");
+            showNotification("Product is removed from like list");
         } else {
             likedProducts.push(productIdStr);
-            showNotification("Mahsulot saralanganlarga qo'shildi");
+            showNotification("Product is added to like list");
         }
 
         localStorage.setItem("favorites", JSON.stringify(likedProducts));
@@ -2100,7 +2099,7 @@
 
                     s += `
                 <button id="see-more-btn" onclick="toggleCategories()" class="see-more-btn">
-                    <span id="see-more-text">Ko'proq ko'rsatish</span>
+                    <span id="see-more-text">view all</span>
                     <i id="see-more-icon" class="fas fa-chevron-down"></i>
                 </button>
             `;
@@ -2121,11 +2120,11 @@
 
         if (moreCategories.classList.contains("d-none")) {
             moreCategories.classList.remove("d-none");
-            seeMoreText.textContent = "Kamroq ko'rsatish";
+            seeMoreText.textContent = "collapse all";
             seeMoreIcon.classList.replace("fa-chevron-down", "fa-chevron-up");
         } else {
             moreCategories.classList.add("d-none");
-            seeMoreText.textContent = "Ko'proq ko'rsatish";
+            seeMoreText.textContent = "view all";
             seeMoreIcon.classList.replace("fa-chevron-up", "fa-chevron-down");
         }
     }
