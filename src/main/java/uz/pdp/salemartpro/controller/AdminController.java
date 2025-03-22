@@ -5,15 +5,21 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import uz.pdp.salemartpro.dto.*;
 import uz.pdp.salemartpro.entity.Delivery;
 import uz.pdp.salemartpro.entity.Operator;
 import uz.pdp.salemartpro.entity.Order;
+import uz.pdp.salemartpro.entity.User;
 import uz.pdp.salemartpro.entity.enums.DelivererStatus;
+import uz.pdp.salemartpro.entity.enums.RoleName;
 import uz.pdp.salemartpro.repo.DeliveryRepository;
 import uz.pdp.salemartpro.repo.OrderRepository;
+import uz.pdp.salemartpro.repo.UserRepository;
 import uz.pdp.salemartpro.service.AdminServiceI;
 import uz.pdp.salemartpro.service.DelivereyServis;
 import uz.pdp.salemartpro.service.OperatorService;
@@ -32,13 +38,15 @@ public class AdminController {
     private final OperatorService operatorService;
     private final DeliveryRepository deliveryRepository;
     private final OrderRepository orderRepository;
+    private final UserRepository userRepository;
 
-    public AdminController(AdminServiceI adminServiceI, DelivereyServis delivereyServis, OperatorService operatorService, DeliveryRepository deliveryRepository, OrderRepository orderRepository) {
+    public AdminController(AdminServiceI adminServiceI, DelivereyServis delivereyServis, OperatorService operatorService, DeliveryRepository deliveryRepository, OrderRepository orderRepository, UserRepository userRepository) {
         this.adminServiceI = adminServiceI;
         this.delivereyServis = delivereyServis;
         this.operatorService = operatorService;
         this.deliveryRepository = deliveryRepository;
         this.orderRepository = orderRepository;
+        this.userRepository = userRepository;
     }
 
     @DeleteMapping("/category/{id}")
@@ -62,14 +70,15 @@ public class AdminController {
     }
 
     @PutMapping("/product/{productId}")
-    public HttpEntity<?> updateProduct(@PathVariable Integer productId,@RequestBody ProductDto productDTO) {
-        return adminServiceI.updateProduct(productDTO,productId);
+    public HttpEntity<?> updateProduct(@PathVariable Integer productId, @RequestBody ProductDto productDTO) {
+        return adminServiceI.updateProduct(productDTO, productId);
     }
 
     @DeleteMapping("/product/{id}")
     public HttpEntity<?> deleteProduct(@PathVariable int id) {
         return adminServiceI.deleteProduct(id);
     }
+
     @GetMapping("/delivers")
     public HttpEntity<?> getDeliverers() {
         return adminServiceI.getDeliverers();
@@ -174,7 +183,8 @@ public class AdminController {
             return ResponseEntity.internalServerError().body(errorResponse);
         }
     }
-/// ///////////////////////////////////////////////////
+
+    /// ///////////////////////////////////////////////////
 
     @GetMapping("/deliverer{id}")
     public HttpEntity<?> getDeliverer(@PathVariable int id) {
@@ -196,12 +206,19 @@ public class AdminController {
         return ResponseEntity.ok(availableDeliverers);
     }
 
+
     @GetMapping("/orders/unassigned")
     public HttpEntity<?> getUnassignedOrders() {
         List<Order> byIsAttached = orderRepository.findByIsAttached(false);
         return ResponseEntity.ok(byIsAttached);
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        return ResponseEntity.ok(users);
+    }
 }
+
 
 //security, status delivery string,

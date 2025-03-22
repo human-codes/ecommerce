@@ -1244,6 +1244,7 @@
             method: 'POST',
             data: userData
         }).then((res) => {
+            loadUser();
             console.log("User created successfully:", res.data);
             if (res.data) {
                 users.push(res.data);
