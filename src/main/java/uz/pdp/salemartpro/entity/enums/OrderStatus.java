@@ -1,7 +1,7 @@
 package uz.pdp.salemartpro.entity.enums;
 
 public enum OrderStatus {
-    PENDING,
+    NEW,
     IN_PROGRESS,
     DELIVERED,
     CANCELLED

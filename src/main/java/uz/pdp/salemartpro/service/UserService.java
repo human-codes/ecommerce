@@ -1,6 +1,7 @@
 package uz.pdp.salemartpro.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,6 +17,7 @@ import uz.pdp.salemartpro.email.CodeGenerator;
 import uz.pdp.salemartpro.service.RedisService;
 import uz.pdp.salemartpro.service.EmailService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -116,5 +118,17 @@ public class UserService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         return new UserDto(user.getUsername(), user.getEmail(),user.getPhone());
+    }
+
+    public List<User> getAllUsers() {
+        try {
+            List<User> users = userRepository.findAll();
+            System.out.println("Found " + users.size() + " users in database");
+            return users;
+        } catch (Exception e) {
+            System.err.println("Error in getAllUsers: " + e.getMessage());
+            e.printStackTrace();
+            return new ArrayList<>(); // Return empty list instead of null to prevent NPE
+        }
     }
 }

@@ -20,7 +20,7 @@ public class Order extends BaseEntity{
     private LocalDateTime orderDate;
 
     @Enumerated(EnumType.STRING)
-    private OrderStatus status=OrderStatus.PENDING;
+    private OrderStatus status=OrderStatus.NEW;
 
     private Boolean isAttached=false;
 
@@ -33,5 +33,8 @@ public class Order extends BaseEntity{
 
     @ManyToOne
     private Address deliveredAddress;
+
+    @ManyToOne
+    private Delivery delivery;
 
 }
