@@ -1161,7 +1161,7 @@
 <!-- Saralanganlar paneli -->
 <div id="favorites-panel" class="favorites-panel">
     <div class="panel-header">
-        <h4>Saralangan mahsulotlar</h4>
+        <h4>Your liked products</h4>
         <button onclick="toggleFavoritesPanel()" class="close-btn">&times;</button>
     </div>
     <div id="favorites-list" class="favorites-list">
@@ -1575,8 +1575,8 @@
             productList.innerHTML = `
                 <div class="no-products-message col-12">
                     <i class="bi bi-search"></i>
-                    <h4>Mahsulotlar topilmadi</h4>
-                    <p>Boshqa so'rov bilan qayta urinib ko'ring</p>
+                    <h4>Products are not found</h4>
+                    <p>You can refresh the page to get all products</p>
                 </div>
             `;
             return;
@@ -1654,8 +1654,8 @@
         if (likedProducts.length === 0) {
             productElement.innerHTML = `
             <div class="empty-likes text-center mt-5">
-                <h4 class="text-danger mt-3">Hech qanday tanlangan mahsulot yo'q</h4>
-                <p>Mahsulotlarni yoqtiring va ularni shu yerda ko'ring.</p>
+                <h4 class="text-danger mt-3">There is no any liked product</h4>
+                <p>Click like button on product cart and you can see it here</p>
             </div>
         `;
             return;
@@ -1900,10 +1900,10 @@
 
         if (index !== -1) {
             likedProducts.splice(index, 1);
-            showNotification("Mahsulot saralanganlardan olib tashlandi");
+            showNotification("Product is removed from like list");
         } else {
             likedProducts.push(productIdStr);
-            showNotification("Mahsulot saralanganlarga qo'shildi");
+            showNotification("Product is added to like list");
         }
 
         localStorage.setItem("favorites", JSON.stringify(likedProducts));
@@ -2099,7 +2099,7 @@
 
                     s += `
                 <button id="see-more-btn" onclick="toggleCategories()" class="see-more-btn">
-                    <span id="see-more-text">Ko'proq ko'rsatish</span>
+                    <span id="see-more-text">view all</span>
                     <i id="see-more-icon" class="fas fa-chevron-down"></i>
                 </button>
             `;
@@ -2120,11 +2120,11 @@
 
         if (moreCategories.classList.contains("d-none")) {
             moreCategories.classList.remove("d-none");
-            seeMoreText.textContent = "Kamroq ko'rsatish";
+            seeMoreText.textContent = "collapse all";
             seeMoreIcon.classList.replace("fa-chevron-down", "fa-chevron-up");
         } else {
             moreCategories.classList.add("d-none");
-            seeMoreText.textContent = "Ko'proq ko'rsatish";
+            seeMoreText.textContent = "view all";
             seeMoreIcon.classList.replace("fa-chevron-up", "fa-chevron-down");
         }
     }

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import uz.pdp.salemartpro.dto.*;
 import uz.pdp.salemartpro.entity.Inquiry;
 import uz.pdp.salemartpro.entity.User;
+import uz.pdp.salemartpro.entity.enums.RoleName;
 import uz.pdp.salemartpro.repo.InquiryRepository;
 import uz.pdp.salemartpro.repo.RoleRepository;
 import uz.pdp.salemartpro.repo.UserRepository;
@@ -17,6 +18,9 @@ import uz.pdp.salemartpro.service.RedisService;
 import uz.pdp.salemartpro.service.UserService;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/user")
@@ -117,30 +121,15 @@ public class UserController {
         if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal().equals("anonymousUser")) {
             return ResponseEntity.status(401).body("Unauthorized");
         }
-
         User user = (User) authentication.getPrincipal();
         return ResponseEntity.ok().body(user);
     }
-
-    @PostMapping("/set-inquiry")
-    public ResponseEntity<?> getInquiry(@RequestBody InquiryDto inquiryDto) {
-        Inquiry inquiry = new Inquiry();
-        inquiry.setFullName(inquiryDto.getFullName());
-        inquiry.setEmail(inquiryDto.getEmail());
-        inquiry.setPhone(inquiryDto.getPhone());
-        inquiry.setMessage(inquiryDto.getMessage());
-        inquiryRepository.save(inquiry);
-        return ResponseEntity.ok().body("Inquiry submitted successfully");
-    }
-
-    //    behruz
 
     @GetMapping("/{username}")
     public ResponseEntity<UserDto> getUserByUsername(@PathVariable String username) {
         UserDto user = userService.findByUsername(username);
         return ResponseEntity.ok(user);
     }
-
 
     @PutMapping("/update/{username}")
     public ResponseEntity<?> updateUser(@RequestBody UserUpdateDto userUpdateDto, @PathVariable String username) {
@@ -161,4 +150,41 @@ public class UserController {
     }
 
 
+    @PostMapping("/set-inquiry")
+    public ResponseEntity<String> saveInquiry(@RequestBody InquiryDto inquiryDto) {
+        Inquiry inquiry = new Inquiry();
+        inquiry.setFullName(inquiryDto.getFullName());
+        inquiry.setEmail(inquiryDto.getEmail());
+        inquiry.setPhone(inquiryDto.getPhone());
+        inquiry.setMessage(inquiryDto.getMessage());
+        inquiry.setReviewed(false); // Default: false
+        inquiryRepository.save(inquiry);
+        return ResponseEntity.ok("Inquiry submitted successfully");
+    }
+
+    @PutMapping("/inquiry/{id}")
+    public ResponseEntity<String> markAsReviewed(@PathVariable Integer id, @RequestBody Map<String, String> request) {
+        Inquiry inquiry = inquiryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Inquiry not found"));
+
+        if (inquiry.getReviewed()) {
+            return ResponseEntity.badRequest().body("Inquiry already reviewed");
+        }
+        String reviewedBy = request.get("reviewedBy");
+        System.out.println(reviewedBy);// JSON'dan `reviewedBy` ni olamiz
+        Optional<User> user = userRepository.findByUsername(reviewedBy);
+        if (user.isPresent()) {
+            System.out.println(user);
+        } else {
+            System.out.println("user yo'q");
+        }
+        inquiry.setReviewed(true);
+        inquiryRepository.save(inquiry);
+        return ResponseEntity.ok("Inquiry marked as reviewed");
+    }
+
+    @GetMapping("/inquiries")
+    public ResponseEntity<List<Inquiry>> getAllInquiries() {
+        return ResponseEntity.ok(inquiryRepository.findAll());
+    }
 }

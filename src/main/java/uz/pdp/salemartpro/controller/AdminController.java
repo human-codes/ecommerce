@@ -3,7 +3,7 @@ package uz.pdp.salemartpro.controller;
 
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Page; // This is the correct import
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -14,10 +14,7 @@ import uz.pdp.salemartpro.dto.*;
 import uz.pdp.salemartpro.entity.*;
 import uz.pdp.salemartpro.entity.enums.DelivererStatus;
 import uz.pdp.salemartpro.entity.enums.OrderStatus;
-import uz.pdp.salemartpro.repo.DeliveryRepository;
-import uz.pdp.salemartpro.repo.OrderRepository;
-import uz.pdp.salemartpro.repo.RouteItemRepository;
-import uz.pdp.salemartpro.repo.RouteRepository;
+import uz.pdp.salemartpro.repo.*;
 import uz.pdp.salemartpro.service.AdminServiceI;
 import uz.pdp.salemartpro.service.DelivereyServis;
 import uz.pdp.salemartpro.service.OperatorService;
@@ -40,8 +37,9 @@ public class AdminController {
     private final RouteRepository routeRepository;
     private final RouteItemRepository routeItemRepository;
     private final OrderService orderService;
+    private final UserRepository userRepository;
 
-    public AdminController(AdminServiceI adminServiceI, DelivereyServis delivereyServis, OperatorService operatorService, DeliveryRepository deliveryRepository, OrderRepository orderRepository, RouteRepository routeRepository, RouteItemRepository routeItemRepository, OrderService orderService) {
+    public AdminController(AdminServiceI adminServiceI, DelivereyServis delivereyServis, OperatorService operatorService, DeliveryRepository deliveryRepository, OrderRepository orderRepository, RouteRepository routeRepository, RouteItemRepository routeItemRepository, OrderService orderService, UserRepository userRepository) {
         this.adminServiceI = adminServiceI;
         this.delivereyServis = delivereyServis;
         this.operatorService = operatorService;
@@ -50,6 +48,7 @@ public class AdminController {
         this.routeRepository = routeRepository;
         this.routeItemRepository = routeItemRepository;
         this.orderService = orderService;
+        this.userRepository = userRepository;
     }
 
     @DeleteMapping("/category/{id}")
@@ -73,14 +72,15 @@ public class AdminController {
     }
 
     @PutMapping("/product/{productId}")
-    public HttpEntity<?> updateProduct(@PathVariable Integer productId,@RequestBody ProductDto productDTO) {
-        return adminServiceI.updateProduct(productDTO,productId);
+    public HttpEntity<?> updateProduct(@PathVariable Integer productId, @RequestBody ProductDto productDTO) {
+        return adminServiceI.updateProduct(productDTO, productId);
     }
 
     @DeleteMapping("/product/{id}")
     public HttpEntity<?> deleteProduct(@PathVariable int id) {
         return adminServiceI.deleteProduct(id);
     }
+
     @GetMapping("/delivers")
     public HttpEntity<?> getDeliverers() {
         return adminServiceI.getDeliverers();
@@ -208,7 +208,8 @@ public class AdminController {
             return ResponseEntity.internalServerError().body(errorResponse);
         }
     }
-/// ///////////////////////////////////////////////////
+
+    /// ///////////////////////////////////////////////////
 
     @GetMapping("/deliverer{id}")
     public HttpEntity<?> getDeliverer(@PathVariable int id) {
@@ -230,12 +231,18 @@ public class AdminController {
         return ResponseEntity.ok(availableDeliverers);
     }
 
+
     @GetMapping("/orders/unassigned")
     public HttpEntity<?> getUnassignedOrders() {
         List<Order> byIsAttached = orderRepository.findByIsAttached(false);
         return ResponseEntity.ok(byIsAttached);
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        return ResponseEntity.ok(users);
+    }
     @PostMapping("/route/save")
     public HttpEntity<?> saveRoute(@RequestBody RouteDto routeDto) {
         Delivery delivery = deliveryRepository.findById(routeDto.getDeliveryId()).orElseThrow();
@@ -285,5 +292,6 @@ public class AdminController {
         return ResponseEntity.ok(detachedOrder);
     }
 }
+
 
 //security, status delivery string,
