@@ -93,16 +93,16 @@
     }
 
     .pagination .page-item.active .page-link {
-      background-color: #0a192f;
-      border-color: #0a192f;
+      background-color: #1ecb63; /* Green background for active page */
+      border-color: #1ecb63; /* Green border for active page */
     }
 
     .pagination .page-link {
-      color: #0a192f;
+      color: #0a192f; /* Dark text color for non-active pages */
     }
 
     .pagination .page-link:hover {
-      color: #1ecb63;
+      color: #1ecb63; /* Green text color on hover */
     }
 
     .table-responsive {
@@ -252,14 +252,14 @@
     try {
       // Show loading spinner
       document.getElementById('orders-table-body').innerHTML = `
-                    <tr>
-                        <td colspan="8">
-                            <div class="loading-spinner">
-                                <i class="fas fa-spinner"></i>
-                            </div>
-                        </td>
-                    </tr>
-                `;
+        <tr>
+          <td colspan="8">
+            <div class="loading-spinner">
+              <i class="fas fa-spinner"></i>
+            </div>
+          </td>
+        </tr>
+      `;
 
       // Get search query
       const searchQuery = document.getElementById('orderSearch').value;
@@ -288,13 +288,13 @@
     } catch (error) {
       console.error("Error loading orders:", error);
       document.getElementById('orders-table-body').innerHTML = `
-                    <tr>
-                        <td colspan="8" class="text-center text-danger">
-                            <i class="fas fa-exclamation-circle me-2"></i>
-                            Error loading orders. Please try again.
-                        </td>
-                    </tr>
-                `;
+        <tr>
+          <td colspan="8" class="text-center text-danger">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            Error loading orders. Please try again.
+          </td>
+        </tr>
+      `;
     }
   }
 
@@ -303,16 +303,16 @@
 
     if (orders.length === 0) {
       tableBody.innerHTML = `
-                    <tr>
-                        <td colspan="8">
-                            <div class="empty-state">
-                                <i class="fas fa-inbox"></i>
-                                <h4>No New Orders</h4>
-                                <p>There are no new orders at the moment</p>
-                            </div>
-                        </td>
-                    </tr>
-                `;
+        <tr>
+          <td colspan="8">
+            <div class="empty-state">
+              <i class="fas fa-inbox"></i>
+              <h4>No New Orders</h4>
+              <p>There are no new orders at the moment</p>
+            </div>
+          </td>
+        </tr>
+      `;
       return;
     }
 
@@ -327,17 +327,17 @@
       const delivererInfo = 'Not assigned';
 
       html += `
-                    <tr>
-                        <td>${order.id}</td>
-                        <td>${orderDate}</td>
-                        <td>${customerName}</td>
-                        <td>${order.phoneNumber || 'N/A'}</td>
-                        <td>${address}</td>
-                        <td>${delivererInfo}</td>
-                        <td>${order.notes || '-'}</td>
-                        <td><span class="status-badge status-new">NEW</span></td>
-                    </tr>
-                `;
+        <tr>
+          <td>${order.id}</td>
+          <td>${orderDate}</td>
+          <td>${customerName}</td>
+          <td>${order.phoneNumber || 'N/A'}</td>
+          <td>${address}</td>
+          <td>${delivererInfo}</td>
+          <td>${order.notes || '-'}</td>
+          <td><span class="status-badge status-new">NEW</span></td>
+        </tr>
+      `;
     });
 
     tableBody.innerHTML = html;
@@ -349,12 +349,12 @@
 
     // Previous button
     html += `
-                <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
-                    <a class="page-link" href="#" onclick="changePage(${currentPage - 1}); return false;">
-                        <i class="fas fa-chevron-left"></i>
-                    </a>
-                </li>
-            `;
+      <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+        <a class="page-link" href="#" onclick="changePage(${currentPage - 1}); return false;">
+          <i class="fas fa-chevron-left"></i>
+        </a>
+      </li>
+    `;
 
     // Page numbers
     const startPage = Math.max(1, currentPage - 2);
@@ -362,20 +362,20 @@
 
     for (let i = startPage; i <= endPage; i++) {
       html += `
-                    <li class="page-item ${i === currentPage ? 'active' : ''}">
-                        <a class="page-link" href="#" onclick="changePage(${i}); return false;">${i}</a>
-                    </li>
-                `;
+        <li class="page-item ${i === currentPage ? 'active' : ''}">
+          <a class="page-link" href="#" onclick="changePage(${i}); return false;">${i}</a>
+        </li>
+      `;
     }
 
     // Next button
     html += `
-                <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
-                    <a class="page-link" href="#" onclick="changePage(${currentPage + 1}); return false;">
-                        <i class="fas fa-chevron-right"></i>
-                    </a>
-                </li>
-            `;
+      <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+        <a class="page-link" href="#" onclick="changePage(${currentPage + 1}); return false;">
+          <i class="fas fa-chevron-right"></i>
+        </a>
+      </li>
+    `;
 
     pagination.innerHTML = html;
   }
@@ -400,9 +400,9 @@
     alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-5`;
     alertDiv.style.zIndex = "9999";
     alertDiv.innerHTML = `
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            `;
+      ${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
     document.body.appendChild(alertDiv);
 
     // Auto dismiss after 3 seconds
